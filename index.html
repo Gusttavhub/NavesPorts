@@ -5,442 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NavePort - Mobilidade Operacional Unificada</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #FFFFFF;
             color: #1A1A1A;
+            overflow: hidden;
         }
 
-        /* PALETA DE CORES */
         :root {
             --navy: #0B2545;
+            --navy-claro: #1A4B75;
             --laranja: #E55934;
+            --laranja-escuro: #D64A2F;
             --amarelo: #FEC40F;
             --verde: #008542;
+            --vermelho: #DC3545;
             --cinza-claro: #F5F5F5;
+            --cinza-medio: #E0E0E0;
+            --cinza-texto: #666;
             --branco: #FFFFFF;
         }
 
-        /* ===== LAYOUT GERAL ===== */
-        .container {
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        header {
-            background-color: var(--navy);
-            color: var(--branco);
-            padding: 16px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--amarelo);
-            border-radius: 6px;
-            color: var(--navy);
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .hora-atual {
-            font-size: 14px;
-            color: var(--amarelo);
-        }
-
-        /* ===== DASHBOARD PRINCIPAL ===== */
-        .dashboard {
-            display: flex;
-            width: 100%;
-            gap: 0;
-        }
-
-        .mapa-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 24px;
-            background-color: var(--cinza-claro);
-        }
-
-        .mapa-titulo {
-            color: var(--navy);
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 16px;
-        }
-
-        .mapa {
-            flex: 1;
-            background: linear-gradient(135deg, #E8F0F8 0%, #F0F8E8 100%);
-            border-radius: 8px;
-            border: 2px solid var(--navy);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            color: var(--navy);
-            opacity: 0.7;
-        }
-
-        /* Pontos no mapa (veículos) */
-        .veiculo-ponto {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid var(--branco);
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .veiculo-ponto:hover {
-            width: 26px;
-            height: 26px;
-        }
-
-        .veiculo-parvi { background-color: var(--amarelo); }
-        .veiculo-vale { background-color: var(--navy); }
-        .veiculo-terramel { background-color: var(--verde); }
-        .veiculo-chuvabix { background-color: #FF6B6B; }
-        .veiculo-plamont { background-color: #4ECDC4; }
-
-        /* Marcador de interdição no mapa */
-        .bloqueio-marca {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background-color: var(--laranja);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: var(--branco);
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(229, 89, 52, 0.4);
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        /* ===== SIDEBAR ===== */
-        .sidebar {
-            width: 30%;
-            background-color: var(--branco);
-            padding: 24px;
-            border-left: 1px solid #E0E0E0;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            overflow-y: auto;
-        }
-
-        .card-kpi {
-            background-color: var(--cinza-claro);
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            border-left: 4px solid var(--laranja);
-        }
-
-        .card-kpi-label {
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .card-kpi-valor {
-            font-size: 32px;
-            font-weight: bold;
-            color: var(--navy);
-        }
-
-        .botoes-acao {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: auto;
-        }
-
-        button {
-            padding: 14px 20px;
-            font-size: 15px;
-            font-weight: 600;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-            width: 100%;
-        }
-
-        .btn-primary {
-            background-color: var(--laranja);
-            color: var(--branco);
-        }
-
-        .btn-primary:hover {
-            background-color: #D64A2F;
-            box-shadow: 0 4px 12px rgba(229, 89, 52, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background-color: var(--cinza-claro);
-            color: var(--navy);
-            border: 2px solid var(--navy);
-        }
-
-        .btn-secondary:hover {
-            background-color: var(--navy);
-            color: var(--branco);
-        }
-
-        /* ===== MODAL ===== */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background-color: var(--branco);
-            border-radius: 12px;
-            padding: 32px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(40px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-title {
-            font-size: 22px;
-            font-weight: bold;
-            color: var(--navy);
-            margin-bottom: 24px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--navy);
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            font-size: 14px;
-            border: 2px solid var(--cinza-claro);
-            border-radius: 6px;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--laranja);
-            box-shadow: 0 0 0 3px rgba(229, 89, 52, 0.1);
-        }
-
-        .form-group input:disabled {
-            background-color: var(--cinza-claro);
-            color: #999;
-        }
-
-        /* ===== LISTA DE VEÍCULOS (modal) ===== */
-        .veiculos-lista {
-            display: none;
-            margin-top: 24px;
-        }
-
-        .veiculos-lista.active {
-            display: block;
-        }
-
-        .veiculo-opcao {
-            padding: 16px;
-            background-color: var(--cinza-claro);
-            border: 2px solid transparent;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .veiculo-opcao:hover {
-            border-color: var(--laranja);
-            background-color: var(--branco);
-            box-shadow: 0 4px 12px rgba(229, 89, 52, 0.2);
-        }
-
-        .veiculo-nome {
-            font-weight: bold;
-            color: var(--navy);
-            font-size: 14px;
-        }
-
-        .veiculo-tempo {
-            font-size: 12px;
-            color: var(--verde);
-            margin-top: 4px;
-        }
-
-        .veiculo-status {
-            font-size: 11px;
-            color: #666;
-            margin-top: 6px;
-        }
-
-        /* ===== NOTIFICAÇÃO ===== */
-        .notificacao {
-            position: fixed;
-            bottom: 24px;
-            left: 24px;
-            background-color: var(--verde);
-            color: var(--branco);
-            padding: 16px 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            display: none;
-            z-index: 2000;
-            animation: slideUp 0.3s ease;
-        }
-
-        .notificacao.active {
-            display: block;
-        }
-
-        /* ===== DASHBOARD DESPACHANTE ===== */
-        .dashboard-despachante {
-            display: none;
-            width: 100%;
-            padding: 32px;
-            background-color: var(--cinza-claro);
-            overflow-y: auto;
-        }
-
-        .dashboard-despachante.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .despachante-titulo {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--navy);
-            margin-bottom: 32px;
-        }
-
-        .kpis-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .kpi-card {
-            background-color: var(--branco);
-            padding: 28px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            border-left: 6px solid var(--laranja);
-        }
-
-        .kpi-card:nth-child(even) {
-            border-left-color: var(--verde);
-            background-color: var(--cinza-claro);
-        }
-
-        .kpi-label {
-            font-size: 13px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-        }
-
-        .kpi-numero {
-            font-size: 48px;
-            font-weight: bold;
-            color: var(--navy);
-        }
-
-        .botoes-despachante {
-            display: flex;
-            gap: 12px;
-        }
-
-        /* ===== LOGIN ===== */
+        /* LOGIN */
         .login-container {
             display: flex;
             align-items: center;
@@ -454,44 +42,30 @@
             padding: 48px;
             border-radius: 12px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
-        .login-logo {
-            text-align: center;
-            margin-bottom: 32px;
-        }
+        .login-logo { text-align: center; margin-bottom: 32px; }
 
         .login-logo-icon {
-            width: 60px;
-            height: 60px;
+            width: 72px; height: 72px;
             background-color: var(--amarelo);
-            border-radius: 8px;
+            border-radius: 12px;
             margin: 0 auto 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 40px;
         }
 
-        .login-logo h1 {
-            font-size: 32px;
-            color: var(--navy);
-        }
+        .login-logo h1 { font-size: 32px; color: var(--navy); margin-bottom: 4px; }
+        .login-logo p { font-size: 13px; color: var(--cinza-texto); }
 
-        .login-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+        .login-form { display: flex; flex-direction: column; gap: 16px; }
 
         .login-form input {
-            padding: 14px;
-            font-size: 15px;
+            padding: 14px; font-size: 15px;
             border: 2px solid var(--cinza-claro);
-            border-radius: 6px;
-            font-family: inherit;
+            border-radius: 6px; font-family: inherit;
         }
 
         .login-form input:focus {
@@ -504,96 +78,600 @@
             padding: 14px;
             background-color: var(--laranja);
             color: var(--branco);
-            font-size: 16px;
-            font-weight: 600;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            font-size: 16px; font-weight: 600;
+            border: none; border-radius: 6px;
+            cursor: pointer; transition: all 0.2s ease;
+            margin-top: 8px;
         }
 
         .login-form button:hover {
-            background-color: #D64A2F;
+            background-color: var(--laranja-escuro);
             box-shadow: 0 4px 12px rgba(229, 89, 52, 0.3);
             transform: translateY(-2px);
         }
 
-        /* ===== UTILIDADES ===== */
-        .hidden {
-            display: none !important;
+        .login-help {
+            margin-top: 20px; padding: 12px;
+            background-color: var(--cinza-claro);
+            border-radius: 6px;
+            font-size: 12px; color: var(--cinza-texto);
+            line-height: 1.6;
         }
+
+        .login-help strong { color: var(--navy); }
+
+        .login-error {
+            color: var(--vermelho);
+            font-size: 13px; margin-top: 4px;
+            display: none;
+        }
+        .login-error.active { display: block; }
+
+        /* HEADER */
+        header {
+            background-color: var(--navy);
+            color: var(--branco);
+            padding: 14px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            height: 64px;
+        }
+
+        .logo {
+            font-size: 22px; font-weight: bold;
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .logo-icon {
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            background-color: var(--amarelo);
+            border-radius: 8px; font-size: 20px;
+        }
+
+        .header-right { display: flex; align-items: center; gap: 20px; }
+
+        .user-badge {
+            display: flex; align-items: center; gap: 10px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px; font-weight: 600;
+        }
+
+        .user-badge.adm { background-color: var(--laranja); color: var(--branco); }
+        .user-badge.user { background-color: var(--verde); color: var(--branco); }
+
+        .hora-atual {
+            font-size: 14px; color: var(--amarelo); font-weight: 600;
+        }
+
+        .btn-logout {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: var(--branco);
+            padding: 6px 14px; border-radius: 6px;
+            cursor: pointer; font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover { background-color: rgba(255,255,255,0.1); }
+
+        /* LAYOUT */
+        .app-container {
+            display: flex;
+            height: calc(100vh - 64px);
+        }
+
+        .mapa-section {
+            flex: 1;
+            display: flex; flex-direction: column;
+            background-color: var(--cinza-claro);
+            position: relative;
+        }
+
+        .mapa-header {
+            padding: 16px 24px;
+            background-color: var(--branco);
+            border-bottom: 1px solid var(--cinza-medio);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px;
+        }
+
+        .mapa-titulo { color: var(--navy); font-size: 17px; font-weight: bold; }
+        .mapa-titulo-sub { font-size: 12px; color: var(--cinza-texto); margin-top: 2px; }
+
+        .mapa-legendas {
+            display: flex; gap: 14px; font-size: 11px;
+            flex-wrap: wrap;
+        }
+
+        .legenda-item { display: flex; align-items: center; gap: 5px; }
+        .legenda-cor { width: 14px; height: 4px; border-radius: 2px; }
+
+        /* MAPA GOOGLE */
+        .mapa-google-container {
+            flex: 1; position: relative; overflow: hidden;
+        }
+
+        .mapa-google-container iframe {
+            width: 100%; height: 100%; border: 0;
+        }
+
+        .rotas-lista-flutuante {
+            position: absolute;
+            top: 16px; right: 16px;
+            background-color: var(--branco);
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+            padding: 16px;
+            width: 280px;
+            max-height: 420px;
+            overflow-y: auto;
+            z-index: 20;
+        }
+
+        .rotas-lista-titulo {
+            font-size: 12px; font-weight: bold;
+            color: var(--navy); margin-bottom: 12px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--cinza-claro);
+            padding-bottom: 8px;
+        }
+
+        .rota-item {
+            padding: 10px 12px;
+            background-color: var(--cinza-claro);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--verde);
+            font-size: 12px;
+            position: relative;
+        }
+
+        .rota-item-nome {
+            font-weight: bold; color: var(--navy);
+            margin-bottom: 4px; padding-right: 20px;
+        }
+
+        .rota-item-tipo {
+            color: var(--cinza-texto); font-size: 11px; line-height: 1.5;
+        }
+
+        .rota-item-tipo strong { color: var(--navy); }
+
+        .rota-item-delete {
+            position: absolute; top: 8px; right: 8px;
+            background: none; border: none;
+            color: var(--vermelho); cursor: pointer;
+            font-size: 14px; padding: 0 4px;
+        }
+
+        .rotas-vazias {
+            text-align: center; color: var(--cinza-texto);
+            font-size: 12px; padding: 20px 10px;
+            font-style: italic; line-height: 1.6;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 340px;
+            background-color: var(--branco);
+            padding: 24px;
+            border-left: 1px solid var(--cinza-medio);
+            display: flex; flex-direction: column; gap: 14px;
+            overflow-y: auto;
+        }
+
+        .sidebar-titulo {
+            font-size: 13px; font-weight: bold;
+            color: var(--navy);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .card-kpi {
+            background-color: var(--cinza-claro);
+            padding: 14px 16px;
+            border-radius: 8px;
+            border-left: 4px solid var(--laranja);
+        }
+
+        .card-kpi-label {
+            font-size: 10px; color: var(--cinza-texto);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .card-kpi-valor {
+            font-size: 24px; font-weight: bold; color: var(--navy);
+        }
+
+        .botoes-acao {
+            display: flex; flex-direction: column; gap: 10px;
+            margin-top: 4px;
+        }
+
+        button {
+            padding: 13px 16px;
+            font-size: 13px; font-weight: 600;
+            border: none; border-radius: 6px;
+            cursor: pointer; transition: all 0.2s ease;
+            text-align: center; width: 100%;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background-color: var(--laranja); color: var(--branco);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--laranja-escuro);
+            box-shadow: 0 4px 12px rgba(229, 89, 52, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: var(--branco);
+            color: var(--navy);
+            border: 2px solid var(--navy);
+        }
+
+        .btn-secondary:hover { background-color: var(--navy); color: var(--branco); }
+
+        .btn-adm {
+            background-color: var(--navy); color: var(--branco);
+        }
+
+        .btn-adm:hover { background-color: var(--navy-claro); }
+
+        .adm-aviso {
+            background-color: #FFF4E6;
+            border-left: 4px solid var(--laranja);
+            padding: 10px 12px;
+            border-radius: 4px;
+            font-size: 11px; color: var(--navy);
+            margin-top: 4px; line-height: 1.5;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center; justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal.active { display: flex; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            background-color: var(--branco);
+            border-radius: 12px;
+            padding: 32px;
+            width: 90%; max-width: 520px;
+            max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-title {
+            font-size: 20px; font-weight: bold;
+            color: var(--navy); margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            font-size: 13px; color: var(--cinza-texto);
+            margin-bottom: 24px;
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        .form-group label {
+            display: block;
+            font-size: 12px; font-weight: 600;
+            color: var(--navy); margin-bottom: 6px;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 11px; font-size: 14px;
+            border: 2px solid var(--cinza-claro);
+            border-radius: 6px; font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--laranja);
+            box-shadow: 0 0 0 3px rgba(229, 89, 52, 0.1);
+        }
+
+        .form-group input:disabled {
+            background-color: var(--cinza-claro);
+            color: var(--cinza-texto);
+        }
+
+        .form-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+        }
+
+        .veiculos-lista {
+            display: none;
+            margin-top: 20px; padding-top: 20px;
+            border-top: 1px solid var(--cinza-claro);
+        }
+
+        .veiculos-lista.active { display: block; }
+
+        .veiculos-lista-titulo {
+            font-size: 12px; color: var(--cinza-texto);
+            margin-bottom: 12px; text-transform: uppercase;
+        }
+
+        .veiculo-opcao {
+            padding: 14px;
+            background-color: var(--cinza-claro);
+            border: 2px solid transparent;
+            border-radius: 8px; margin-bottom: 10px;
+            cursor: pointer; transition: all 0.2s ease;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .veiculo-opcao:hover {
+            border-color: var(--laranja);
+            background-color: var(--branco);
+            box-shadow: 0 4px 12px rgba(229, 89, 52, 0.15);
+        }
+
+        .veiculo-info-principal { flex: 1; }
+
+        .veiculo-nome {
+            font-weight: bold; color: var(--navy);
+            font-size: 14px; margin-bottom: 2px;
+        }
+
+        .veiculo-empresa { font-size: 11px; color: var(--cinza-texto); }
+
+        .veiculo-tempo {
+            font-size: 18px; font-weight: bold; color: var(--verde);
+        }
+
+        .veiculo-tempo-label {
+            font-size: 10px; color: var(--cinza-texto); text-align: center;
+        }
+
+        .tipos-rota-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+        }
+
+        .tipo-rota-opcao {
+            padding: 12px;
+            border: 2px solid var(--cinza-claro);
+            border-radius: 6px; cursor: pointer;
+            text-align: center; font-size: 13px;
+            transition: all 0.2s;
+            display: flex; align-items: center;
+            gap: 8px; justify-content: center;
+        }
+
+        .tipo-rota-opcao:hover { border-color: var(--laranja); }
+
+        .tipo-rota-opcao.selected {
+            border-color: var(--laranja);
+            background-color: #FFF4E6;
+            font-weight: bold; color: var(--navy);
+        }
+
+        .tipo-rota-cor {
+            width: 14px; height: 14px; border-radius: 3px;
+        }
+
+        /* NOTIFICAÇÃO */
+        .notificacao {
+            position: fixed;
+            bottom: 24px; left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--verde);
+            color: var(--branco);
+            padding: 14px 24px; border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            display: none; z-index: 2000;
+            animation: slideUpNotif 0.3s ease;
+            font-weight: 600; font-size: 14px;
+            max-width: 90%;
+        }
+
+        @keyframes slideUpNotif {
+            from { transform: translate(-50%, 30px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+
+        .notificacao.active { display: block; }
+        .notificacao.erro { background-color: var(--vermelho); }
+        .notificacao.adm { background-color: var(--navy); }
+
+        /* DASHBOARD DESPACHANTE */
+        .dashboard-despachante {
+            display: none;
+            width: 100%; padding: 32px;
+            background-color: var(--cinza-claro);
+            overflow-y: auto;
+            height: calc(100vh - 64px);
+        }
+
+        .dashboard-despachante.active {
+            display: flex; flex-direction: column;
+        }
+
+        .despachante-titulo {
+            font-size: 26px; font-weight: bold;
+            color: var(--navy); margin-bottom: 8px;
+        }
+
+        .despachante-subtitulo {
+            font-size: 14px; color: var(--cinza-texto);
+            margin-bottom: 28px;
+        }
+
+        .kpis-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 18px; margin-bottom: 32px;
+        }
+
+        .kpi-card {
+            background-color: var(--branco);
+            padding: 24px; border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-top: 4px solid var(--laranja);
+        }
+
+        .kpi-card:nth-child(even) { border-top-color: var(--verde); }
+
+        .kpi-label {
+            font-size: 12px; color: var(--cinza-texto);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .kpi-numero {
+            font-size: 42px; font-weight: bold; color: var(--navy);
+        }
+
+        .botoes-despachante { display: flex; gap: 12px; }
+
+        .hidden { display: none !important; }
 
         .btn-fechar {
             position: absolute;
-            top: 16px;
-            right: 16px;
-            background: none;
-            border: none;
-            font-size: 28px;
-            color: var(--navy);
-            cursor: pointer;
-            padding: 0;
-            width: auto;
+            top: 16px; right: 16px;
+            background: none; border: none;
+            font-size: 28px; color: var(--navy);
+            cursor: pointer; padding: 0;
+            width: 32px; height: 32px; line-height: 1;
         }
 
-        .btn-fechar:hover {
-            color: var(--laranja);
-        }
+        .btn-fechar:hover { color: var(--laranja); }
 
-        /* Responsivo mínimo (opcional) */
-        @media (max-width: 1024px) {
-            .dashboard {
-                flex-direction: column;
-            }
-
+        @media (max-width: 1100px) {
+            .app-container { flex-direction: column; }
             .sidebar {
                 width: 100%;
                 border-left: none;
-                border-top: 1px solid #E0E0E0;
+                border-top: 1px solid var(--cinza-medio);
+                max-height: 280px;
             }
-
-            .kpis-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .kpis-grid { grid-template-columns: repeat(2, 1fr); }
+            .rotas-lista-flutuante { width: 240px; max-height: 300px; }
         }
     </style>
 </head>
 <body>
-    <!-- ===== LOGIN ===== -->
+
+    <!-- LOGIN -->
     <div id="loginScreen" class="login-container">
         <div class="login-box">
             <div class="login-logo">
                 <div class="login-logo-icon">🧭</div>
                 <h1>NavePort</h1>
+                <p>Mobilidade Operacional Unificada</p>
             </div>
             <form class="login-form" onsubmit="entrar(event)">
-                <input type="email" placeholder="E-mail" value="elilson@vale.com" required>
-                <input type="password" placeholder="Senha" value="123" required>
+                <input type="email" id="emailInput" placeholder="E-mail" value="elilson@vale.com" required>
+                <input type="password" id="senhaInput" placeholder="Senha" value="123" required>
+                <div id="loginError" class="login-error">E-mail ou senha incorretos</div>
                 <button type="submit">Entrar</button>
             </form>
+            <div class="login-help">
+                <strong>👤 Usuário Comum:</strong><br>
+                elilson@vale.com / 123<br><br>
+                <strong>🔧 Administrador:</strong><br>
+                admin@vale.com / admin
+            </div>
         </div>
     </div>
 
-    <!-- ===== APLICAÇÃO PRINCIPAL ===== -->
+    <!-- APP -->
     <div id="appContainer" class="hidden">
         <header>
             <div class="logo">
                 <div class="logo-icon">🧭</div>
                 <span>NavePort</span>
             </div>
-            <div class="hora-atual" id="horaAtual">14:32</div>
+            <div class="header-right">
+                <div id="userBadge" class="user-badge user">
+                    <span id="userBadgeIcon">👤</span>
+                    <span id="userBadgeText">Usuário</span>
+                </div>
+                <div class="hora-atual" id="horaAtual">14:32</div>
+                <button class="btn-logout" onclick="sair()">Sair</button>
+            </div>
         </header>
 
         <!-- Dashboard Principal -->
-        <div id="dashboardPrincipal" class="container">
-            <div class="mapa-container">
-                <div class="mapa-titulo">Mapa de Veículos Ativos</div>
-                <div class="mapa" id="mapa">
-                    <span id="mapaMensagem">Carregando veículos...</span>
+        <div id="dashboardPrincipal" class="app-container">
+            <div class="mapa-section">
+                <div class="mapa-header">
+                    <div>
+                        <div class="mapa-titulo">Mapa Operacional — Porto de Ponta da Madeira</div>
+                        <div class="mapa-titulo-sub">São Luís, MA • 29 km² • 287 veículos ativos</div>
+                    </div>
+                    <div class="mapa-legendas">
+                        <div class="legenda-item">
+                            <div class="legenda-cor" style="background: #4A90E2;"></div>
+                            <span>Pedestre</span>
+                        </div>
+                        <div class="legenda-item">
+                            <div class="legenda-cor" style="background: #50C878;"></div>
+                            <span>Veículo Leve</span>
+                        </div>
+                        <div class="legenda-item">
+                            <div class="legenda-cor" style="background: #FEC40F;"></div>
+                            <span>Utilitário</span>
+                        </div>
+                        <div class="legenda-item">
+                            <div class="legenda-cor" style="background: #E55934;"></div>
+                            <span>Caminhão</span>
+                        </div>
+                        <div class="legenda-item">
+                            <div class="legenda-cor" style="background: #8B5CF6;"></div>
+                            <span>Ônibus</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mapa-google-container">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d27676.166625170703!2d-44.33718982605348!3d-2.5764701983604246!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1spt-BR!2sbr!4v1776467317257!5m2!1spt-BR!2sbr"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+
+                    <div class="rotas-lista-flutuante">
+                        <div class="rotas-lista-titulo">🛣️ Rotas Cadastradas</div>
+                        <div id="rotasLista">
+                            <div class="rotas-vazias">
+                                Nenhuma rota cadastrada ainda.<br>
+                                <span id="rotasVaziasHint">Peça ao administrador para cadastrar rotas.</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="sidebar">
+                <div class="sidebar-titulo">Painel de Controle</div>
+
                 <div class="card-kpi">
                     <div class="card-kpi-label">Veículos Ativos</div>
                     <div class="card-kpi-valor">287</div>
@@ -604,110 +682,39 @@
                     <div class="card-kpi-valor">4 min</div>
                 </div>
 
+                <div class="card-kpi">
+                    <div class="card-kpi-label">Rotas Cadastradas</div>
+                    <div class="card-kpi-valor" id="kpiRotasCount">0</div>
+                </div>
+
                 <div class="botoes-acao">
+                    <div class="sidebar-titulo" style="margin-top: 8px;">Ações</div>
+
                     <button class="btn-primary" onclick="abrirModalSolicitar()">
-                        Solicitar Transporte
+                        🚗 Solicitar Transporte
                     </button>
-                    <button class="btn-primary" onclick="abrirModalBloqueio()">
-                        Registrar Bloqueio
+
+                    <button id="btnCadastrarRota" class="btn-adm hidden" onclick="abrirModalRota()">
+                        🛣️ Cadastrar Nova Rota
                     </button>
-                    <button class="btn-secondary" onclick="verDashboardDespachante()">
-                        Ver Dashboard Despachante
+                    <button id="btnRegistrarBloqueio" class="btn-primary hidden" onclick="abrirModalBloqueio()">
+                        ⚠️ Registrar Bloqueio
                     </button>
-                </div>
-            </div>
-        </div>
+                    <button id="btnDashboardDespachante" class="btn-secondary hidden" onclick="verDashboardDespachante()">
+                        📊 Dashboard Despachante
+                    </button>
 
-        <!-- Modal Solicitar Transporte -->
-        <div id="modalSolicitar" class="modal" onclick="fecharModal(event)">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <button class="btn-fechar" onclick="fecharModalSolicitar()">×</button>
-                <div class="modal-title">Solicitar Transporte de Pessoa</div>
-
-                <div class="form-group">
-                    <label>Origem</label>
-                    <input type="text" value="Prédio do Núcleo" disabled>
-                </div>
-
-                <div class="form-group">
-                    <label>Destino</label>
-                    <select id="destinoSelect" onchange="buscarVeiculos()">
-                        <option value="">Selecionar destino...</option>
-                        <option value="Valer">Valer</option>
-                        <option value="Píer 1">Píer 1</option>
-                        <option value="Píer 2">Píer 2</option>
-                        <option value="Píer 3">Píer 3</option>
-                        <option value="Píer 4">Píer 4</option>
-                        <option value="Pátio Central">Pátio Central</option>
-                        <option value="Armazém Norte">Armazém Norte</option>
-                    </select>
-                </div>
-
-                <div id="veiculosLista" class="veiculos-lista">
-                    <div class="veiculo-opcao" onclick="selecionarVeiculo('Parvi', 2)">
-                        <div class="veiculo-nome">🚌 Circular Parvi</div>
-                        <div class="veiculo-tempo">2 minutos</div>
-                        <div class="veiculo-status">✓ Disponível</div>
-                    </div>
-                    <div class="veiculo-opcao" onclick="selecionarVeiculo('Vale', 4)">
-                        <div class="veiculo-nome">🚗 Utilitário Vale</div>
-                        <div class="veiculo-tempo">4 minutos</div>
-                        <div class="veiculo-status">✓ Disponível</div>
-                    </div>
-                    <div class="veiculo-opcao" onclick="selecionarVeiculo('Terramel', 6)">
-                        <div class="veiculo-nome">🚐 Van Terramel</div>
-                        <div class="veiculo-tempo">6 minutos</div>
-                        <div class="veiculo-status">✓ Disponível</div>
+                    <div id="avisoUsuario" class="adm-aviso">
+                        ℹ️ Funções de cadastro de rotas e registro de bloqueios são restritas a administradores.
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Modal Registrar Bloqueio -->
-        <div id="modalBloqueio" class="modal" onclick="fecharModal(event)">
-            <div class="modal-content" onclick="event.stopPropagation()">
-                <button class="btn-fechar" onclick="fecharModalBloqueio()">×</button>
-                <div class="modal-title">Registrar Bloqueio de Via</div>
-
-                <div class="form-group">
-                    <label>Localização</label>
-                    <select id="localizacaoBloqueio">
-                        <option value="">Selecionar localização...</option>
-                        <option value="Pátio Central">Pátio Central</option>
-                        <option value="Píer 1">Píer 1</option>
-                        <option value="Píer 2">Píer 2</option>
-                        <option value="Píer 3">Píer 3</option>
-                        <option value="Píer 4">Píer 4</option>
-                        <option value="Armazém Norte">Armazém Norte</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Motivo</label>
-                    <select id="motivoBloqueio">
-                        <option value="">Selecionar motivo...</option>
-                        <option value="Manutenção">Manutenção</option>
-                        <option value="Deslizamento">Deslizamento de Pilha</option>
-                        <option value="Guincho">Operação de Guincho</option>
-                        <option value="Roço">Roço/Limpeza</option>
-                        <option value="Outro">Outro</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Tempo Estimado (horas)</label>
-                    <input type="number" id="tempoEstimado" min="0.5" step="0.5" value="2" required>
-                </div>
-
-                <button class="btn-primary" onclick="confirmarBloqueio()">
-                    Confirmar Bloqueio
-                </button>
             </div>
         </div>
 
         <!-- Dashboard Despachante -->
         <div id="dashboardDespachante" class="dashboard-despachante">
             <div class="despachante-titulo">Centro de Controle Operacional</div>
+            <div class="despachante-subtitulo">Visão consolidada do Porto de Ponta da Madeira — atualizado em tempo real</div>
 
             <div class="kpis-grid">
                 <div class="kpi-card">
@@ -728,7 +735,7 @@
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-label">Interdições Hoje</div>
-                    <div class="kpi-numero" id="contadorInterdições">0</div>
+                    <div class="kpi-numero" id="contadorInterdicoes">0</div>
                 </div>
                 <div class="kpi-card">
                     <div class="kpi-label">Rotas Replanejadas</div>
@@ -737,33 +744,278 @@
             </div>
 
             <div class="botoes-despachante">
-                <button class="btn-secondary" onclick="voltarDashboard()">
-                    ← Voltar ao Dashboard
-                </button>
-                <button class="btn-primary" onclick="iniciarDemo()">
-                    ▶ Demo Automática
+                <button class="btn-secondary" onclick="voltarDashboard()">← Voltar ao Dashboard</button>
+            </div>
+        </div>
+
+        <!-- MODAL Solicitar -->
+        <div id="modalSolicitar" class="modal" onclick="fecharModalClick(event)">
+            <div class="modal-content">
+                <button class="btn-fechar" onclick="fecharModalSolicitar()">×</button>
+                <div class="modal-title">Solicitar Transporte</div>
+                <div class="modal-subtitle">Informe origem e destino para ver veículos disponíveis</div>
+
+                <div class="form-group">
+                    <label>Origem</label>
+                    <input type="text" value="Prédio do Núcleo" disabled>
+                </div>
+
+                <div class="form-group">
+                    <label>Destino</label>
+                    <select id="destinoSelect" onchange="buscarVeiculos()">
+                        <option value="">Selecionar destino...</option>
+                        <option value="Valer">Valer — Centro de Treinamento</option>
+                        <option value="Píer 1">Píer 1</option>
+                        <option value="Píer 2">Píer 2</option>
+                        <option value="Píer 3">Píer 3</option>
+                        <option value="Píer 4">Píer 4</option>
+                        <option value="Pátio Central">Pátio Central</option>
+                        <option value="Armazém Norte">Armazém Norte</option>
+                        <option value="Armazém Sul">Armazém Sul</option>
+                    </select>
+                </div>
+
+                <div id="veiculosLista" class="veiculos-lista">
+                    <div class="veiculos-lista-titulo">🚗 Veículos Disponíveis</div>
+                    <div class="veiculo-opcao" onclick="selecionarVeiculo('Parvi', 2)">
+                        <div class="veiculo-info-principal">
+                            <div class="veiculo-nome">🚌 Circular Parvi</div>
+                            <div class="veiculo-empresa">Parvi Transportes • 12 lugares</div>
+                        </div>
+                        <div>
+                            <div class="veiculo-tempo">2 min</div>
+                            <div class="veiculo-tempo-label">chegada</div>
+                        </div>
+                    </div>
+                    <div class="veiculo-opcao" onclick="selecionarVeiculo('Vale', 4)">
+                        <div class="veiculo-info-principal">
+                            <div class="veiculo-nome">🚗 Utilitário Vale</div>
+                            <div class="veiculo-empresa">Vale S.A. • 4 lugares</div>
+                        </div>
+                        <div>
+                            <div class="veiculo-tempo">4 min</div>
+                            <div class="veiculo-tempo-label">chegada</div>
+                        </div>
+                    </div>
+                    <div class="veiculo-opcao" onclick="selecionarVeiculo('Terramel', 6)">
+                        <div class="veiculo-info-principal">
+                            <div class="veiculo-nome">🚐 Van Terramel</div>
+                            <div class="veiculo-empresa">Terramel Logística • 8 lugares</div>
+                        </div>
+                        <div>
+                            <div class="veiculo-tempo">6 min</div>
+                            <div class="veiculo-tempo-label">chegada</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL Cadastrar Rota (só ADM) -->
+        <div id="modalRota" class="modal" onclick="fecharModalClick(event)">
+            <div class="modal-content">
+                <button class="btn-fechar" onclick="fecharModalRota()">×</button>
+                <div class="modal-title">🛣️ Cadastrar Nova Rota</div>
+                <div class="modal-subtitle">⚠️ Função restrita a administradores</div>
+
+                <div class="form-group">
+                    <label>Nome da Rota</label>
+                    <input type="text" id="rotaNome" placeholder="Ex: Rota Núcleo → Píer 3">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Origem</label>
+                        <select id="rotaOrigem">
+                            <option value="">Selecionar...</option>
+                            <option value="Prédio do Núcleo">Prédio do Núcleo</option>
+                            <option value="Valer">Valer</option>
+                            <option value="Píer 1">Píer 1</option>
+                            <option value="Píer 2">Píer 2</option>
+                            <option value="Píer 3">Píer 3</option>
+                            <option value="Píer 4">Píer 4</option>
+                            <option value="Pátio Central">Pátio Central</option>
+                            <option value="Armazém Norte">Armazém Norte</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Destino</label>
+                        <select id="rotaDestino">
+                            <option value="">Selecionar...</option>
+                            <option value="Prédio do Núcleo">Prédio do Núcleo</option>
+                            <option value="Valer">Valer</option>
+                            <option value="Píer 1">Píer 1</option>
+                            <option value="Píer 2">Píer 2</option>
+                            <option value="Píer 3">Píer 3</option>
+                            <option value="Píer 4">Píer 4</option>
+                            <option value="Pátio Central">Pátio Central</option>
+                            <option value="Armazém Norte">Armazém Norte</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Rota (quais veículos podem usar)</label>
+                    <div class="tipos-rota-grid">
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Pedestre', '#4A90E2')">
+                            <div class="tipo-rota-cor" style="background: #4A90E2;"></div>
+                            <span>🚶 Pedestre</span>
+                        </div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Veículo Leve', '#50C878')">
+                            <div class="tipo-rota-cor" style="background: #50C878;"></div>
+                            <span>🚗 Veículo Leve</span>
+                        </div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Utilitário', '#FEC40F')">
+                            <div class="tipo-rota-cor" style="background: #FEC40F;"></div>
+                            <span>🚐 Utilitário</span>
+                        </div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Caminhão', '#E55934')">
+                            <div class="tipo-rota-cor" style="background: #E55934;"></div>
+                            <span>🚛 Caminhão</span>
+                        </div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Ônibus', '#8B5CF6')">
+                            <div class="tipo-rota-cor" style="background: #8B5CF6;"></div>
+                            <span>🚌 Ônibus</span>
+                        </div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Todos', '#0B2545')">
+                            <div class="tipo-rota-cor" style="background: #0B2545;"></div>
+                            <span>✓ Todos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Distância Estimada (km)</label>
+                    <input type="number" id="rotaDistancia" min="0.1" step="0.1" value="3.5">
+                </div>
+
+                <button class="btn-adm" onclick="confirmarRota()">
+                    ✓ Cadastrar Rota
                 </button>
             </div>
         </div>
 
-        <!-- Notificação -->
+        <!-- MODAL Bloqueio (só ADM) -->
+        <div id="modalBloqueio" class="modal" onclick="fecharModalClick(event)">
+            <div class="modal-content">
+                <button class="btn-fechar" onclick="fecharModalBloqueio()">×</button>
+                <div class="modal-title">⚠️ Registrar Bloqueio de Via</div>
+                <div class="modal-subtitle">Função restrita a administradores</div>
+
+                <div class="form-group">
+                    <label>Localização</label>
+                    <select id="localizacaoBloqueio">
+                        <option value="">Selecionar localização...</option>
+                        <option value="Pátio Central">Pátio Central</option>
+                        <option value="Píer 1">Píer 1</option>
+                        <option value="Píer 2">Píer 2</option>
+                        <option value="Píer 3">Píer 3</option>
+                        <option value="Píer 4">Píer 4</option>
+                        <option value="Armazém Norte">Armazém Norte</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Motivo do Bloqueio</label>
+                    <select id="motivoBloqueio">
+                        <option value="">Selecionar motivo...</option>
+                        <option value="Manutenção">Manutenção Programada</option>
+                        <option value="Deslizamento">Deslizamento de Pilha</option>
+                        <option value="Guincho">Operação de Guincho</option>
+                        <option value="Roço">Roço/Limpeza</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tempo Estimado (horas)</label>
+                    <input type="number" id="tempoEstimado" min="0.5" step="0.5" value="2">
+                </div>
+
+                <button class="btn-primary" onclick="confirmarBloqueio()">
+                    Confirmar Bloqueio
+                </button>
+            </div>
+        </div>
+
         <div id="notificacao" class="notificacao"></div>
     </div>
 
     <script>
-        // ===== VARIÁVEIS GLOBAIS =====
-        let contadorInterdicoes = 0;
-        let veiculosSelecionados = [];
+        const usuarios = {
+            'elilson@vale.com': { senha: '123', tipo: 'user', nome: 'Elilson (Supervisor)' },
+            'admin@vale.com': { senha: 'admin', tipo: 'adm', nome: 'Administrador Vale' }
+        };
 
-        // ===== FUNÇÕES PRINCIPAIS =====
+        let usuarioAtual = null;
+        let contadorInterdicoes = 0;
+        let rotas = [];
+        let tipoRotaSelecionado = null;
+        let corRotaSelecionada = null;
 
         function entrar(event) {
             event.preventDefault();
+            const email = document.getElementById('emailInput').value.trim().toLowerCase();
+            const senha = document.getElementById('senhaInput').value;
+
+            const usuario = usuarios[email];
+            if (!usuario || usuario.senha !== senha) {
+                document.getElementById('loginError').classList.add('active');
+                return;
+            }
+
+            usuarioAtual = { email, ...usuario };
+            document.getElementById('loginError').classList.remove('active');
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('appContainer').classList.remove('hidden');
+
+            configurarUIPorPermissao();
             atualizarHora();
-            renderizarMapaVeiculos();
             setInterval(atualizarHora, 1000);
+        }
+
+        function sair() {
+            usuarioAtual = null;
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('appContainer').classList.add('hidden');
+            document.getElementById('emailInput').value = 'elilson@vale.com';
+            document.getElementById('senhaInput').value = '123';
+        }
+
+        function configurarUIPorPermissao() {
+            const badge = document.getElementById('userBadge');
+            const badgeIcon = document.getElementById('userBadgeIcon');
+            const badgeText = document.getElementById('userBadgeText');
+
+            const btnRota = document.getElementById('btnCadastrarRota');
+            const btnBloqueio = document.getElementById('btnRegistrarBloqueio');
+            const btnDashboard = document.getElementById('btnDashboardDespachante');
+            const avisoUsuario = document.getElementById('avisoUsuario');
+            const rotasVaziasHint = document.getElementById('rotasVaziasHint');
+
+            if (usuarioAtual.tipo === 'adm') {
+                badge.className = 'user-badge adm';
+                badgeIcon.textContent = '🔧';
+                badgeText.textContent = usuarioAtual.nome;
+
+                btnRota.classList.remove('hidden');
+                btnBloqueio.classList.remove('hidden');
+                btnDashboard.classList.remove('hidden');
+                avisoUsuario.classList.add('hidden');
+                if (rotasVaziasHint) rotasVaziasHint.textContent = 'Clique em "Cadastrar Nova Rota" para adicionar.';
+            } else {
+                badge.className = 'user-badge user';
+                badgeIcon.textContent = '👤';
+                badgeText.textContent = usuarioAtual.nome;
+
+                btnRota.classList.add('hidden');
+                btnBloqueio.classList.add('hidden');
+                btnDashboard.classList.add('hidden');
+                avisoUsuario.classList.remove('hidden');
+                if (rotasVaziasHint) rotasVaziasHint.textContent = 'Peça ao administrador para cadastrar rotas.';
+            }
+
+            renderizarRotas();
         }
 
         function atualizarHora() {
@@ -771,43 +1023,6 @@
             const horas = String(agora.getHours()).padStart(2, '0');
             const minutos = String(agora.getMinutes()).padStart(2, '0');
             document.getElementById('horaAtual').textContent = `${horas}:${minutos}`;
-        }
-
-        function renderizarMapaVeiculos() {
-            const mapa = document.getElementById('mapa');
-            mapa.innerHTML = ''; // limpar
-
-            // Dados de veículos mockados
-            const veiculos = [
-                { empresa: 'parvi', x: 20, y: 30, nome: 'VL-001' },
-                { empresa: 'vale', x: 45, y: 50, nome: 'VL-002' },
-                { empresa: 'terramel', x: 70, y: 35, nome: 'VL-003' },
-                { empresa: 'chuvabix', x: 60, y: 65, nome: 'VL-004' },
-                { empresa: 'plamont', x: 30, y: 75, nome: 'VL-005' },
-                { empresa: 'parvi', x: 75, y: 60, nome: 'VL-006' },
-                { empresa: 'vale', x: 40, y: 20, nome: 'VL-007' },
-                { empresa: 'terramel', x: 50, y: 80, nome: 'VL-008' },
-            ];
-
-            veiculos.forEach(v => {
-                const ponto = document.createElement('div');
-                ponto.className = `veiculo-ponto veiculo-${v.empresa}`;
-                ponto.style.left = v.x + '%';
-                ponto.style.top = v.y + '%';
-                ponto.title = `${v.nome} - ${v.empresa}`;
-                mapa.appendChild(ponto);
-            });
-
-            // Adicionar interdições se existirem
-            if (contadorInterdicoes > 0) {
-                const bloqueio = document.createElement('div');
-                bloqueio.className = 'bloqueio-marca';
-                bloqueio.innerHTML = '🚫';
-                bloqueio.style.left = '50%';
-                bloqueio.style.top = '50%';
-                bloqueio.style.transform = 'translate(-50%, -50%)';
-                mapa.appendChild(bloqueio);
-            }
         }
 
         function abrirModalSolicitar() {
@@ -830,12 +1045,112 @@
         }
 
         function selecionarVeiculo(empresa, tempo) {
-            const destino = document.getElementById('destinoSelect').value;
-            mostrarNotificacao(`✓ Veículo ${empresa} confirmado. Chegará em ${tempo} minutos.`);
+            mostrarNotificacao(`✓ Veículo ${empresa} confirmado. Chegará em ${tempo} minutos.`, 'verde');
             fecharModalSolicitar();
         }
 
+        function abrirModalRota() {
+            if (usuarioAtual.tipo !== 'adm') {
+                mostrarNotificacao('⛔ Acesso negado. Apenas administradores.', 'erro');
+                return;
+            }
+            document.getElementById('modalRota').classList.add('active');
+        }
+
+        function fecharModalRota() {
+            document.getElementById('modalRota').classList.remove('active');
+            document.getElementById('rotaNome').value = '';
+            document.getElementById('rotaOrigem').value = '';
+            document.getElementById('rotaDestino').value = '';
+            document.getElementById('rotaDistancia').value = '3.5';
+            document.querySelectorAll('.tipo-rota-opcao').forEach(el => el.classList.remove('selected'));
+            tipoRotaSelecionado = null;
+            corRotaSelecionada = null;
+        }
+
+        function selecionarTipoRota(event, tipo, cor) {
+            document.querySelectorAll('.tipo-rota-opcao').forEach(el => el.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            tipoRotaSelecionado = tipo;
+            corRotaSelecionada = cor;
+        }
+
+        function confirmarRota() {
+            const nome = document.getElementById('rotaNome').value.trim();
+            const origem = document.getElementById('rotaOrigem').value;
+            const destino = document.getElementById('rotaDestino').value;
+            const distancia = document.getElementById('rotaDistancia').value;
+
+            if (!nome || !origem || !destino || !tipoRotaSelecionado) {
+                mostrarNotificacao('⚠ Preencha todos os campos e selecione o tipo de rota.', 'erro');
+                return;
+            }
+
+            if (origem === destino) {
+                mostrarNotificacao('⚠ Origem e destino não podem ser iguais.', 'erro');
+                return;
+            }
+
+            const novaRota = {
+                id: Date.now(),
+                nome, origem, destino,
+                tipo: tipoRotaSelecionado,
+                cor: corRotaSelecionada,
+                distancia: parseFloat(distancia)
+            };
+
+            rotas.push(novaRota);
+            renderizarRotas();
+            atualizarKPIRotas();
+            mostrarNotificacao(`✓ Rota "${nome}" cadastrada com sucesso!`, 'adm');
+            fecharModalRota();
+        }
+
+        function renderizarRotas() {
+            const container = document.getElementById('rotasLista');
+
+            if (rotas.length === 0) {
+                const hint = usuarioAtual && usuarioAtual.tipo === 'adm'
+                    ? 'Clique em "Cadastrar Nova Rota" para adicionar.'
+                    : 'Peça ao administrador para cadastrar rotas.';
+                container.innerHTML = `
+                    <div class="rotas-vazias">
+                        Nenhuma rota cadastrada ainda.<br>
+                        <span>${hint}</span>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = rotas.map(rota => `
+                <div class="rota-item" style="border-left-color: ${rota.cor};">
+                    ${usuarioAtual.tipo === 'adm' ? `<button class="rota-item-delete" onclick="removerRota(${rota.id})">🗑</button>` : ''}
+                    <div class="rota-item-nome">${rota.nome}</div>
+                    <div class="rota-item-tipo">
+                        ${rota.origem} → ${rota.destino}<br>
+                        <strong>${rota.tipo}</strong> • ${rota.distancia} km
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function removerRota(id) {
+            if (usuarioAtual.tipo !== 'adm') return;
+            rotas = rotas.filter(r => r.id !== id);
+            renderizarRotas();
+            atualizarKPIRotas();
+            mostrarNotificacao('Rota removida.', 'adm');
+        }
+
+        function atualizarKPIRotas() {
+            document.getElementById('kpiRotasCount').textContent = rotas.length;
+        }
+
         function abrirModalBloqueio() {
+            if (usuarioAtual.tipo !== 'adm') {
+                mostrarNotificacao('⛔ Acesso negado. Apenas administradores.', 'erro');
+                return;
+            }
             document.getElementById('modalBloqueio').classList.add('active');
         }
 
@@ -849,19 +1164,18 @@
             const tempo = document.getElementById('tempoEstimado').value;
 
             if (!localizacao || !motivo) {
-                alert('Preencha todos os campos');
+                mostrarNotificacao('⚠ Preencha todos os campos.', 'erro');
                 return;
             }
 
             contadorInterdicoes++;
-            document.getElementById('contadorInterdições').textContent = contadorInterdicoes;
-
-            mostrarNotificacao(`⚠ Bloqueio registrado em ${localizacao}. Tempo estimado: ${tempo}h`);
-            renderizarMapaVeiculos();
+            document.getElementById('contadorInterdicoes').textContent = contadorInterdicoes;
+            mostrarNotificacao(`⚠ Bloqueio registrado: ${localizacao} (${tempo}h)`, 'adm');
             fecharModalBloqueio();
         }
 
         function verDashboardDespachante() {
+            if (usuarioAtual.tipo !== 'adm') return;
             document.getElementById('dashboardPrincipal').classList.add('hidden');
             document.getElementById('dashboardDespachante').classList.add('active');
         }
@@ -871,30 +1185,23 @@
             document.getElementById('dashboardDespachante').classList.remove('active');
         }
 
-        function mostrarNotificacao(mensagem) {
+        function mostrarNotificacao(mensagem, tipo = 'verde') {
             const notif = document.getElementById('notificacao');
             notif.textContent = mensagem;
-            notif.classList.add('active');
+            notif.className = 'notificacao active';
+            if (tipo === 'erro') notif.classList.add('erro');
+            if (tipo === 'adm') notif.classList.add('adm');
 
             setTimeout(() => {
                 notif.classList.remove('active');
-            }, 3000);
+            }, 3500);
         }
 
-        function fecharModal(event) {
+        function fecharModalClick(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.classList.remove('active');
             }
         }
-
-        function iniciarDemo() {
-            alert('Demo: Este vídeo mostraria os 3 fluxos principais automaticamente.\n\n1. Solicitar transporte\n2. Registrar bloqueio\n3. Dashboard em ação\n\nNo vídeo real, isso rodaria sem interrupção.');
-        }
-
-        // ===== INICIALIZAR =====
-        document.addEventListener('DOMContentLoaded', () => {
-            // Pronto para logar
-        });
     </script>
 </body>
 </html>
