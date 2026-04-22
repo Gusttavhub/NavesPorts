@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NavePort - Mobilidade Operacional Unificada</title>
+
+    <!-- Leaflet CSS + JS (mapa interativo, sem API key) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -28,86 +35,252 @@
             --branco: #FFFFFF;
         }
 
-        /* LOGIN */
+        /* ============================================ */
+        /* LOGIN — novo layout de duas colunas          */
+        /* ============================================ */
         .login-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
             height: 100vh;
-            background: linear-gradient(135deg, #0B2545 0%, #1A4B75 100%);
+            background: var(--branco);
+        }
+
+        /* Coluna da marca (esquerda) */
+        .login-brand {
+            position: relative;
+            background: linear-gradient(135deg, #0B2545 0%, #1A4B75 60%, #2563a0 100%);
+            color: var(--branco);
+            padding: 56px 64px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        .login-brand::before {
+            content: "";
+            position: absolute;
+            top: -120px; right: -120px;
+            width: 420px; height: 420px;
+            background: radial-gradient(circle, rgba(254,196,15,0.20) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .login-brand::after {
+            content: "";
+            position: absolute;
+            bottom: -160px; left: -80px;
+            width: 380px; height: 380px;
+            background: radial-gradient(circle, rgba(229,89,52,0.22) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .brand-top {
+            display: flex; align-items: center; gap: 14px;
+            position: relative; z-index: 2;
+        }
+
+        .brand-top-icon {
+            width: 52px; height: 52px;
+            background-color: var(--amarelo);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 8px 24px rgba(254,196,15,0.35);
+        }
+
+        .brand-top-nome {
+            font-size: 22px; font-weight: 700; letter-spacing: 0.3px;
+        }
+        .brand-top-sub {
+            font-size: 12px; opacity: 0.75; margin-top: 2px;
+        }
+
+        .brand-center {
+            position: relative; z-index: 2;
+        }
+
+        .brand-tag {
+            display: inline-block;
+            padding: 6px 14px;
+            background: rgba(254,196,15,0.15);
+            color: var(--amarelo);
+            border: 1px solid rgba(254,196,15,0.35);
+            border-radius: 20px;
+            font-size: 11px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 18px;
+        }
+
+        .brand-titulo {
+            font-size: 40px; font-weight: 700;
+            line-height: 1.15; margin-bottom: 16px;
+        }
+        .brand-titulo span { color: var(--amarelo); }
+
+        .brand-descricao {
+            font-size: 15px; line-height: 1.6;
+            opacity: 0.85; max-width: 440px;
+            margin-bottom: 28px;
+        }
+
+        .brand-features {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+            max-width: 480px;
+        }
+
+        .brand-feature {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+            font-size: 13px;
+        }
+        .brand-feature-icon {
+            width: 30px; height: 30px;
+            border-radius: 7px;
+            background: rgba(254,196,15,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0;
+        }
+
+        .brand-footer {
+            position: relative; z-index: 2;
+            font-size: 12px; opacity: 0.6;
+        }
+
+        /* Coluna do formulário (direita) */
+        .login-form-wrapper {
+            display: flex; align-items: center; justify-content: center;
+            padding: 40px 48px;
         }
 
         .login-box {
-            background-color: var(--branco);
-            padding: 48px;
-            border-radius: 12px;
             width: 100%;
-            max-width: 420px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
         }
 
-        .login-logo { text-align: center; margin-bottom: 32px; }
-
-        .login-logo-icon {
-            width: 72px; height: 72px;
-            background-color: var(--amarelo);
-            border-radius: 12px;
-            margin: 0 auto 16px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 40px;
+        .login-box h2 {
+            font-size: 28px; color: var(--navy);
+            margin-bottom: 6px; font-weight: 700;
+        }
+        .login-box .login-sub {
+            font-size: 14px; color: var(--cinza-texto);
+            margin-bottom: 28px;
         }
 
-        .login-logo h1 { font-size: 32px; color: var(--navy); margin-bottom: 4px; }
-        .login-logo p { font-size: 13px; color: var(--cinza-texto); }
+        .login-form { display: flex; flex-direction: column; gap: 14px; }
 
-        .login-form { display: flex; flex-direction: column; gap: 16px; }
-
-        .login-form input {
-            padding: 14px; font-size: 15px;
-            border: 2px solid var(--cinza-claro);
-            border-radius: 6px; font-family: inherit;
+        .input-group {
+            position: relative;
+            display: flex; align-items: center;
         }
-
-        .login-form input:focus {
+        .input-group-icon {
+            position: absolute; left: 14px;
+            font-size: 16px; color: var(--cinza-texto);
+            pointer-events: none;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 14px 14px 14px 44px;
+            font-size: 14px;
+            border: 2px solid var(--cinza-medio);
+            border-radius: 8px;
+            font-family: inherit;
+            background: var(--branco);
+            transition: all 0.2s;
+        }
+        .input-group input:focus {
             outline: none;
             border-color: var(--laranja);
-            box-shadow: 0 0 0 3px rgba(229, 89, 52, 0.1);
+            box-shadow: 0 0 0 4px rgba(229, 89, 52, 0.12);
         }
+        .input-toggle-senha {
+            position: absolute; right: 12px;
+            background: none; border: none;
+            font-size: 16px; color: var(--cinza-texto);
+            cursor: pointer; padding: 4px;
+        }
+        .input-toggle-senha:hover { color: var(--navy); }
 
-        .login-form button {
+        .login-form-row {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 13px; color: var(--cinza-texto);
+            margin-top: -4px;
+        }
+        .login-form-row label {
+            display: flex; align-items: center; gap: 6px;
+            cursor: pointer;
+        }
+        .login-form-row a {
+            color: var(--laranja); text-decoration: none; font-weight: 600;
+        }
+        .login-form-row a:hover { text-decoration: underline; }
+
+        .login-form button[type="submit"] {
             padding: 14px;
-            background-color: var(--laranja);
+            background: linear-gradient(135deg, var(--laranja) 0%, var(--laranja-escuro) 100%);
             color: var(--branco);
-            font-size: 16px; font-weight: 600;
-            border: none; border-radius: 6px;
+            font-size: 15px; font-weight: 600;
+            border: none; border-radius: 8px;
             cursor: pointer; transition: all 0.2s ease;
             margin-top: 8px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: inherit;
         }
-
-        .login-form button:hover {
-            background-color: var(--laranja-escuro);
-            box-shadow: 0 4px 12px rgba(229, 89, 52, 0.3);
+        .login-form button[type="submit"]:hover {
+            box-shadow: 0 8px 20px rgba(229, 89, 52, 0.35);
             transform: translateY(-2px);
         }
 
-        .login-help {
-            margin-top: 20px; padding: 12px;
-            background-color: var(--cinza-claro);
-            border-radius: 6px;
-            font-size: 12px; color: var(--cinza-texto);
-            line-height: 1.6;
+        .login-divisor {
+            text-align: center; color: var(--cinza-texto);
+            font-size: 12px; margin: 18px 0 14px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .login-divisor::before, .login-divisor::after {
+            content: ""; flex: 1; height: 1px; background: var(--cinza-medio);
         }
 
-        .login-help strong { color: var(--navy); }
+        .quick-access {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        }
+        .quick-access-btn {
+            padding: 12px 10px;
+            background: var(--cinza-claro);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit; font-size: 12px;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        .quick-access-btn:hover {
+            border-color: var(--laranja);
+            background: var(--branco);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .quick-access-btn strong {
+            display: block; color: var(--navy); font-size: 13px;
+            margin-bottom: 2px;
+        }
+        .quick-access-btn span { color: var(--cinza-texto); }
 
         .login-error {
             color: var(--vermelho);
-            font-size: 13px; margin-top: 4px;
+            font-size: 13px;
+            background: #FDECEE;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border-left: 3px solid var(--vermelho);
             display: none;
         }
-        .login-error.active { display: block; }
+        .login-error.active { display: flex; align-items: center; gap: 8px; }
 
-        /* HEADER */
+        /* ============================================ */
+        /* HEADER                                       */
+        /* ============================================ */
         header {
             background-color: var(--navy);
             color: var(--branco);
@@ -152,11 +325,13 @@
             padding: 6px 14px; border-radius: 6px;
             cursor: pointer; font-size: 13px;
             transition: all 0.2s;
+            font-family: inherit;
         }
-
         .btn-logout:hover { background-color: rgba(255,255,255,0.1); }
 
-        /* LAYOUT */
+        /* ============================================ */
+        /* LAYOUT APP                                   */
+        /* ============================================ */
         .app-container {
             display: flex;
             height: calc(100vh - 64px);
@@ -188,14 +363,71 @@
         .legenda-item { display: flex; align-items: center; gap: 5px; }
         .legenda-cor { width: 14px; height: 4px; border-radius: 2px; }
 
-        /* MAPA GOOGLE */
         .mapa-google-container {
             flex: 1; position: relative; overflow: hidden;
         }
 
-        .mapa-google-container iframe {
-            width: 100%; height: 100%; border: 0;
+        #mapaLeaflet {
+            width: 100%; height: 100%;
         }
+
+        /* Barra flutuante de modo de desenho (ADM) */
+        .modo-desenho-bar {
+            position: absolute;
+            top: 16px; left: 50%;
+            transform: translateX(-50%);
+            background: var(--branco);
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            padding: 12px 16px;
+            display: none;
+            align-items: center; gap: 12px;
+            z-index: 500;
+            max-width: 90%;
+        }
+        .modo-desenho-bar.active { display: flex; }
+
+        .modo-desenho-status {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; color: var(--navy);
+            font-weight: 600;
+        }
+        .modo-desenho-status .pulse {
+            width: 10px; height: 10px;
+            background: var(--laranja);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        .modo-desenho-contador {
+            background: var(--cinza-claro);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px; font-weight: 600;
+            color: var(--navy);
+        }
+
+        .modo-desenho-btns { display: flex; gap: 8px; }
+
+        .btn-mini {
+            padding: 7px 12px;
+            font-size: 12px; font-weight: 600;
+            border: none; border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn-mini-primary { background: var(--verde); color: white; }
+        .btn-mini-primary:hover { background: #006e36; }
+        .btn-mini-primary:disabled { background: #9cc; opacity: 0.5; cursor: not-allowed; }
+        .btn-mini-secundario { background: var(--cinza-claro); color: var(--navy); }
+        .btn-mini-secundario:hover { background: var(--cinza-medio); }
+        .btn-mini-cancelar { background: var(--vermelho); color: white; }
+        .btn-mini-cancelar:hover { background: #b72a39; }
 
         .rotas-lista-flutuante {
             position: absolute;
@@ -207,7 +439,7 @@
             width: 280px;
             max-height: 420px;
             overflow-y: auto;
-            z-index: 20;
+            z-index: 500;
         }
 
         .rotas-lista-titulo {
@@ -226,25 +458,37 @@
             border-left: 4px solid var(--verde);
             font-size: 12px;
             position: relative;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .rota-item:hover {
+            background: var(--branco);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .rota-item-nome {
             font-weight: bold; color: var(--navy);
-            margin-bottom: 4px; padding-right: 20px;
+            margin-bottom: 4px; padding-right: 40px;
         }
 
         .rota-item-tipo {
             color: var(--cinza-texto); font-size: 11px; line-height: 1.5;
         }
-
         .rota-item-tipo strong { color: var(--navy); }
 
-        .rota-item-delete {
+        .rota-item-acoes {
             position: absolute; top: 8px; right: 8px;
-            background: none; border: none;
-            color: var(--vermelho); cursor: pointer;
-            font-size: 14px; padding: 0 4px;
+            display: flex; gap: 4px;
         }
+
+        .rota-item-btn {
+            background: none; border: none;
+            cursor: pointer; font-size: 14px;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        .rota-item-btn:hover { background: var(--cinza-medio); }
+        .rota-item-btn.delete { color: var(--vermelho); }
 
         .rotas-vazias {
             text-align: center; color: var(--cinza-texto);
@@ -303,7 +547,6 @@
         .btn-primary {
             background-color: var(--laranja); color: var(--branco);
         }
-
         .btn-primary:hover {
             background-color: var(--laranja-escuro);
             box-shadow: 0 4px 12px rgba(229, 89, 52, 0.3);
@@ -315,13 +558,11 @@
             color: var(--navy);
             border: 2px solid var(--navy);
         }
-
         .btn-secondary:hover { background-color: var(--navy); color: var(--branco); }
 
         .btn-adm {
             background-color: var(--navy); color: var(--branco);
         }
-
         .btn-adm:hover { background-color: var(--navy-claro); }
 
         .adm-aviso {
@@ -342,7 +583,6 @@
             align-items: center; justify-content: center;
             animation: fadeIn 0.2s ease;
         }
-
         .modal.active { display: flex; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -409,7 +649,6 @@
             margin-top: 20px; padding-top: 20px;
             border-top: 1px solid var(--cinza-claro);
         }
-
         .veiculos-lista.active { display: block; }
 
         .veiculos-lista-titulo {
@@ -475,6 +714,18 @@
             width: 14px; height: 14px; border-radius: 3px;
         }
 
+        /* Box info sobre desenho no mapa */
+        .info-desenho-mapa {
+            background: linear-gradient(135deg, #EEF4FB 0%, #E0EDFA 100%);
+            border-left: 4px solid var(--navy-claro);
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 12px; color: var(--navy);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        .info-desenho-mapa strong { color: var(--navy); }
+
         /* NOTIFICAÇÃO */
         .notificacao {
             position: fixed;
@@ -507,7 +758,6 @@
             overflow-y: auto;
             height: calc(100vh - 64px);
         }
-
         .dashboard-despachante.active {
             display: flex; flex-direction: column;
         }
@@ -534,7 +784,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             border-top: 4px solid var(--laranja);
         }
-
         .kpi-card:nth-child(even) { border-top-color: var(--verde); }
 
         .kpi-label {
@@ -559,8 +808,28 @@
             cursor: pointer; padding: 0;
             width: 32px; height: 32px; line-height: 1;
         }
-
         .btn-fechar:hover { color: var(--laranja); }
+
+        /* Marcadores custom no mapa */
+        .ponto-rota-marker {
+            background: var(--laranja);
+            color: white;
+            width: 28px !important;
+            height: 28px !important;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 900px) {
+            .login-container { grid-template-columns: 1fr; }
+            .login-brand { display: none; }
+        }
 
         @media (max-width: 1100px) {
             .app-container { flex-direction: column; }
@@ -577,30 +846,104 @@
 </head>
 <body>
 
-    <!-- LOGIN -->
+    <!-- ============================================ -->
+    <!-- LOGIN                                        -->
+    <!-- ============================================ -->
     <div id="loginScreen" class="login-container">
-        <div class="login-box">
-            <div class="login-logo">
-                <div class="login-logo-icon">🧭</div>
-                <h1>NavePort</h1>
-                <p>Mobilidade Operacional Unificada</p>
+
+        <!-- Coluna esquerda — marca/branding -->
+        <div class="login-brand">
+            <div class="brand-top">
+                <div class="brand-top-icon">🧭</div>
+                <div>
+                    <div class="brand-top-nome">NavePort</div>
+                    <div class="brand-top-sub">Vale S.A. • Porto de Ponta da Madeira</div>
+                </div>
             </div>
-            <form class="login-form" onsubmit="entrar(event)">
-                <input type="email" id="emailInput" placeholder="E-mail" value="elilson@vale.com" required>
-                <input type="password" id="senhaInput" placeholder="Senha" value="123" required>
-                <div id="loginError" class="login-error">E-mail ou senha incorretos</div>
-                <button type="submit">Entrar</button>
-            </form>
-            <div class="login-help">
-                <strong>👤 Usuário Comum:</strong><br>
-                elilson@vale.com / 123<br><br>
-                <strong>🔧 Administrador:</strong><br>
-                admin@vale.com / admin
+
+            <div class="brand-center">
+                <span class="brand-tag">Mobilidade Operacional</span>
+                <div class="brand-titulo">
+                    Controle total da<br>frota em <span>tempo real</span>
+                </div>
+                <div class="brand-descricao">
+                    Gerencie rotas, acompanhe veículos e otimize deslocamentos
+                    de pessoas e materiais no maior complexo portuário de minério
+                    de ferro do mundo.
+                </div>
+
+                <div class="brand-features">
+                    <div class="brand-feature">
+                        <div class="brand-feature-icon">🗺️</div>
+                        <div>Rotas inteligentes</div>
+                    </div>
+                    <div class="brand-feature">
+                        <div class="brand-feature-icon">🚛</div>
+                        <div>287 veículos ativos</div>
+                    </div>
+                    <div class="brand-feature">
+                        <div class="brand-feature-icon">⚡</div>
+                        <div>Alocação em 4 min</div>
+                    </div>
+                    <div class="brand-feature">
+                        <div class="brand-feature-icon">📊</div>
+                        <div>KPIs em tempo real</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="brand-footer">
+                © 2026 Vale S.A. • Todos os direitos reservados
+            </div>
+        </div>
+
+        <!-- Coluna direita — formulário -->
+        <div class="login-form-wrapper">
+            <div class="login-box">
+                <h2>Bem-vindo de volta 👋</h2>
+                <p class="login-sub">Acesse sua conta para continuar</p>
+
+                <form class="login-form" onsubmit="entrar(event)">
+                    <div class="input-group">
+                        <span class="input-group-icon">📧</span>
+                        <input type="email" id="emailInput" placeholder="seu.email@vale.com" value="elilson@vale.com" required>
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-icon">🔒</span>
+                        <input type="password" id="senhaInput" placeholder="Sua senha" value="123" required>
+                        <button type="button" class="input-toggle-senha" onclick="toggleSenha()" id="toggleSenhaBtn" aria-label="Mostrar senha">👁️</button>
+                    </div>
+
+                    <div class="login-form-row">
+                        <label><input type="checkbox" checked> Lembrar de mim</label>
+                        <a href="#" onclick="event.preventDefault(); mostrarNotificacao('Contate o administrador.', 'adm');">Esqueceu a senha?</a>
+                    </div>
+
+                    <div id="loginError" class="login-error">⛔ <span>E-mail ou senha incorretos</span></div>
+
+                    <button type="submit">Entrar no sistema →</button>
+                </form>
+
+                <div class="login-divisor">Acesso rápido (demo)</div>
+
+                <div class="quick-access">
+                    <button class="quick-access-btn" onclick="preencherCredencial('elilson@vale.com','123')">
+                        <strong>👤 Usuário</strong>
+                        <span>elilson@vale.com</span>
+                    </button>
+                    <button class="quick-access-btn" onclick="preencherCredencial('admin@vale.com','admin')">
+                        <strong>🔧 Administrador</strong>
+                        <span>admin@vale.com</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- APP -->
+    <!-- ============================================ -->
+    <!-- APP                                          -->
+    <!-- ============================================ -->
     <div id="appContainer" class="hidden">
         <header>
             <div class="logo">
@@ -626,36 +969,30 @@
                         <div class="mapa-titulo-sub">São Luís, MA • 29 km² • 287 veículos ativos</div>
                     </div>
                     <div class="mapa-legendas">
-                        <div class="legenda-item">
-                            <div class="legenda-cor" style="background: #4A90E2;"></div>
-                            <span>Pedestre</span>
-                        </div>
-                        <div class="legenda-item">
-                            <div class="legenda-cor" style="background: #50C878;"></div>
-                            <span>Veículo Leve</span>
-                        </div>
-                        <div class="legenda-item">
-                            <div class="legenda-cor" style="background: #FEC40F;"></div>
-                            <span>Utilitário</span>
-                        </div>
-                        <div class="legenda-item">
-                            <div class="legenda-cor" style="background: #E55934;"></div>
-                            <span>Caminhão</span>
-                        </div>
-                        <div class="legenda-item">
-                            <div class="legenda-cor" style="background: #8B5CF6;"></div>
-                            <span>Ônibus</span>
-                        </div>
+                        <div class="legenda-item"><div class="legenda-cor" style="background: #4A90E2;"></div><span>Pedestre</span></div>
+                        <div class="legenda-item"><div class="legenda-cor" style="background: #50C878;"></div><span>Veículo Leve</span></div>
+                        <div class="legenda-item"><div class="legenda-cor" style="background: #FEC40F;"></div><span>Utilitário</span></div>
+                        <div class="legenda-item"><div class="legenda-cor" style="background: #E55934;"></div><span>Caminhão</span></div>
+                        <div class="legenda-item"><div class="legenda-cor" style="background: #8B5CF6;"></div><span>Ônibus</span></div>
                     </div>
                 </div>
 
                 <div class="mapa-google-container">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d27676.166625170703!2d-44.33718982605348!3d-2.5764701983604246!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1spt-BR!2sbr!4v1776467317257!5m2!1spt-BR!2sbr"
-                        allowfullscreen=""
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade">
-                    </iframe>
+                    <div id="mapaLeaflet"></div>
+
+                    <!-- Barra flutuante do modo de desenho (ADM) -->
+                    <div id="modoDesenhoBar" class="modo-desenho-bar">
+                        <div class="modo-desenho-status">
+                            <div class="pulse"></div>
+                            <span>Modo Desenho Ativo — clique no mapa p/ adicionar pontos</span>
+                        </div>
+                        <div class="modo-desenho-contador" id="contadorPontos">0 pontos</div>
+                        <div class="modo-desenho-btns">
+                            <button class="btn-mini btn-mini-secundario" onclick="desfazerUltimoPonto()">↶ Desfazer</button>
+                            <button class="btn-mini btn-mini-primary" id="btnSalvarRota" onclick="salvarRotaDesenhada()" disabled>✓ Salvar Rota</button>
+                            <button class="btn-mini btn-mini-cancelar" onclick="cancelarDesenho()">× Cancelar</button>
+                        </div>
+                    </div>
 
                     <div class="rotas-lista-flutuante">
                         <div class="rotas-lista-titulo">🛣️ Rotas Cadastradas</div>
@@ -697,6 +1034,9 @@
                     <button id="btnCadastrarRota" class="btn-adm hidden" onclick="abrirModalRota()">
                         🛣️ Cadastrar Nova Rota
                     </button>
+                    <button id="btnDesenharRotaMapa" class="btn-primary hidden" onclick="iniciarDesenhoRota()">
+                        ✏️ Desenhar Rota no Mapa
+                    </button>
                     <button id="btnRegistrarBloqueio" class="btn-primary hidden" onclick="abrirModalBloqueio()">
                         ⚠️ Registrar Bloqueio
                     </button>
@@ -717,30 +1057,12 @@
             <div class="despachante-subtitulo">Visão consolidada do Porto de Ponta da Madeira — atualizado em tempo real</div>
 
             <div class="kpis-grid">
-                <div class="kpi-card">
-                    <div class="kpi-label">Tempo Médio Alocação</div>
-                    <div class="kpi-numero">4 min</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Veículos Ativos</div>
-                    <div class="kpi-numero">287</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Pessoas Transportadas</div>
-                    <div class="kpi-numero">143</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Materiais Entregues</div>
-                    <div class="kpi-numero">58</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Interdições Hoje</div>
-                    <div class="kpi-numero" id="contadorInterdicoes">0</div>
-                </div>
-                <div class="kpi-card">
-                    <div class="kpi-label">Rotas Replanejadas</div>
-                    <div class="kpi-numero">12</div>
-                </div>
+                <div class="kpi-card"><div class="kpi-label">Tempo Médio Alocação</div><div class="kpi-numero">4 min</div></div>
+                <div class="kpi-card"><div class="kpi-label">Veículos Ativos</div><div class="kpi-numero">287</div></div>
+                <div class="kpi-card"><div class="kpi-label">Pessoas Transportadas</div><div class="kpi-numero">143</div></div>
+                <div class="kpi-card"><div class="kpi-label">Materiais Entregues</div><div class="kpi-numero">58</div></div>
+                <div class="kpi-card"><div class="kpi-label">Interdições Hoje</div><div class="kpi-numero" id="contadorInterdicoes">0</div></div>
+                <div class="kpi-card"><div class="kpi-label">Rotas Replanejadas</div><div class="kpi-numero">12</div></div>
             </div>
 
             <div class="botoes-despachante">
@@ -782,30 +1104,21 @@
                             <div class="veiculo-nome">🚌 Circular Parvi</div>
                             <div class="veiculo-empresa">Parvi Transportes • 12 lugares</div>
                         </div>
-                        <div>
-                            <div class="veiculo-tempo">2 min</div>
-                            <div class="veiculo-tempo-label">chegada</div>
-                        </div>
+                        <div><div class="veiculo-tempo">2 min</div><div class="veiculo-tempo-label">chegada</div></div>
                     </div>
                     <div class="veiculo-opcao" onclick="selecionarVeiculo('Vale', 4)">
                         <div class="veiculo-info-principal">
                             <div class="veiculo-nome">🚗 Utilitário Vale</div>
                             <div class="veiculo-empresa">Vale S.A. • 4 lugares</div>
                         </div>
-                        <div>
-                            <div class="veiculo-tempo">4 min</div>
-                            <div class="veiculo-tempo-label">chegada</div>
-                        </div>
+                        <div><div class="veiculo-tempo">4 min</div><div class="veiculo-tempo-label">chegada</div></div>
                     </div>
                     <div class="veiculo-opcao" onclick="selecionarVeiculo('Terramel', 6)">
                         <div class="veiculo-info-principal">
                             <div class="veiculo-nome">🚐 Van Terramel</div>
                             <div class="veiculo-empresa">Terramel Logística • 8 lugares</div>
                         </div>
-                        <div>
-                            <div class="veiculo-tempo">6 min</div>
-                            <div class="veiculo-tempo-label">chegada</div>
-                        </div>
+                        <div><div class="veiculo-tempo">6 min</div><div class="veiculo-tempo-label">chegada</div></div>
                     </div>
                 </div>
             </div>
@@ -817,6 +1130,11 @@
                 <button class="btn-fechar" onclick="fecharModalRota()">×</button>
                 <div class="modal-title">🛣️ Cadastrar Nova Rota</div>
                 <div class="modal-subtitle">⚠️ Função restrita a administradores</div>
+
+                <div class="info-desenho-mapa">
+                    💡 <strong>Dica:</strong> Para traçar a rota visualmente no mapa,
+                    feche este modal e clique em <strong>"Desenhar Rota no Mapa"</strong>.
+                </div>
 
                 <div class="form-group">
                     <label>Nome da Rota</label>
@@ -857,30 +1175,12 @@
                 <div class="form-group">
                     <label>Tipo de Rota (quais veículos podem usar)</label>
                     <div class="tipos-rota-grid">
-                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Pedestre', '#4A90E2')">
-                            <div class="tipo-rota-cor" style="background: #4A90E2;"></div>
-                            <span>🚶 Pedestre</span>
-                        </div>
-                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Veículo Leve', '#50C878')">
-                            <div class="tipo-rota-cor" style="background: #50C878;"></div>
-                            <span>🚗 Veículo Leve</span>
-                        </div>
-                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Utilitário', '#FEC40F')">
-                            <div class="tipo-rota-cor" style="background: #FEC40F;"></div>
-                            <span>🚐 Utilitário</span>
-                        </div>
-                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Caminhão', '#E55934')">
-                            <div class="tipo-rota-cor" style="background: #E55934;"></div>
-                            <span>🚛 Caminhão</span>
-                        </div>
-                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Ônibus', '#8B5CF6')">
-                            <div class="tipo-rota-cor" style="background: #8B5CF6;"></div>
-                            <span>🚌 Ônibus</span>
-                        </div>
-                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Todos', '#0B2545')">
-                            <div class="tipo-rota-cor" style="background: #0B2545;"></div>
-                            <span>✓ Todos</span>
-                        </div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Pedestre', '#4A90E2')"><div class="tipo-rota-cor" style="background: #4A90E2;"></div><span>🚶 Pedestre</span></div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Veículo Leve', '#50C878')"><div class="tipo-rota-cor" style="background: #50C878;"></div><span>🚗 Veículo Leve</span></div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Utilitário', '#FEC40F')"><div class="tipo-rota-cor" style="background: #FEC40F;"></div><span>🚐 Utilitário</span></div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Caminhão', '#E55934')"><div class="tipo-rota-cor" style="background: #E55934;"></div><span>🚛 Caminhão</span></div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Ônibus', '#8B5CF6')"><div class="tipo-rota-cor" style="background: #8B5CF6;"></div><span>🚌 Ônibus</span></div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRota(event, 'Todos', '#0B2545')"><div class="tipo-rota-cor" style="background: #0B2545;"></div><span>✓ Todos</span></div>
                     </div>
                 </div>
 
@@ -890,7 +1190,71 @@
                 </div>
 
                 <button class="btn-adm" onclick="confirmarRota()">
-                    ✓ Cadastrar Rota
+                    ✓ Cadastrar Rota (sem traçado no mapa)
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL Finalizar Rota Desenhada -->
+        <div id="modalFinalizarRota" class="modal" onclick="fecharModalClick(event)">
+            <div class="modal-content">
+                <button class="btn-fechar" onclick="document.getElementById('modalFinalizarRota').classList.remove('active')">×</button>
+                <div class="modal-title">✏️ Finalizar Rota Desenhada</div>
+                <div class="modal-subtitle">
+                    Rota com <strong id="finalizarPontosCount">0</strong> pontos •
+                    <strong id="finalizarDistancia">0</strong> km
+                </div>
+
+                <div class="form-group">
+                    <label>Nome da Rota</label>
+                    <input type="text" id="finalizarNome" placeholder="Ex: Rota Núcleo → Píer 3">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Origem</label>
+                        <select id="finalizarOrigem">
+                            <option value="">Selecionar...</option>
+                            <option value="Prédio do Núcleo">Prédio do Núcleo</option>
+                            <option value="Valer">Valer</option>
+                            <option value="Píer 1">Píer 1</option>
+                            <option value="Píer 2">Píer 2</option>
+                            <option value="Píer 3">Píer 3</option>
+                            <option value="Píer 4">Píer 4</option>
+                            <option value="Pátio Central">Pátio Central</option>
+                            <option value="Armazém Norte">Armazém Norte</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Destino</label>
+                        <select id="finalizarDestino">
+                            <option value="">Selecionar...</option>
+                            <option value="Prédio do Núcleo">Prédio do Núcleo</option>
+                            <option value="Valer">Valer</option>
+                            <option value="Píer 1">Píer 1</option>
+                            <option value="Píer 2">Píer 2</option>
+                            <option value="Píer 3">Píer 3</option>
+                            <option value="Píer 4">Píer 4</option>
+                            <option value="Pátio Central">Pátio Central</option>
+                            <option value="Armazém Norte">Armazém Norte</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Rota</label>
+                    <div class="tipos-rota-grid">
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRotaFinalizar(event, 'Pedestre', '#4A90E2')"><div class="tipo-rota-cor" style="background: #4A90E2;"></div><span>🚶 Pedestre</span></div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRotaFinalizar(event, 'Veículo Leve', '#50C878')"><div class="tipo-rota-cor" style="background: #50C878;"></div><span>🚗 Veículo Leve</span></div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRotaFinalizar(event, 'Utilitário', '#FEC40F')"><div class="tipo-rota-cor" style="background: #FEC40F;"></div><span>🚐 Utilitário</span></div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRotaFinalizar(event, 'Caminhão', '#E55934')"><div class="tipo-rota-cor" style="background: #E55934;"></div><span>🚛 Caminhão</span></div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRotaFinalizar(event, 'Ônibus', '#8B5CF6')"><div class="tipo-rota-cor" style="background: #8B5CF6;"></div><span>🚌 Ônibus</span></div>
+                        <div class="tipo-rota-opcao" onclick="selecionarTipoRotaFinalizar(event, 'Todos', '#0B2545')"><div class="tipo-rota-cor" style="background: #0B2545;"></div><span>✓ Todos</span></div>
+                    </div>
+                </div>
+
+                <button class="btn-adm" onclick="confirmarRotaDesenhada()">
+                    ✓ Salvar Rota no Mapa
                 </button>
             </div>
         </div>
@@ -942,10 +1306,17 @@
     </div>
 
     <script>
+        /* ============================================ */
+        /* Estado e constantes                          */
+        /* ============================================ */
         const usuarios = {
             'elilson@vale.com': { senha: '123', tipo: 'user', nome: 'Elilson (Supervisor)' },
             'admin@vale.com': { senha: 'admin', tipo: 'adm', nome: 'Administrador Vale' }
         };
+
+        // Centro aproximado do Porto de Ponta da Madeira
+        const CENTRO_PORTO = [-2.5765, -44.3720];
+        const ZOOM_PADRAO = 14;
 
         let usuarioAtual = null;
         let contadorInterdicoes = 0;
@@ -953,6 +1324,23 @@
         let tipoRotaSelecionado = null;
         let corRotaSelecionada = null;
 
+        // Mapa
+        let mapa = null;
+        let camadasRotas = {}; // id -> {polyline, markers}
+
+        // Desenho em andamento
+        let modoDesenhoAtivo = false;
+        let pontosDesenho = [];          // [[lat,lng], ...]
+        let marcadoresDesenho = [];      // L.Marker[]
+        let polylineDesenho = null;      // L.Polyline
+
+        // Para modal finalizar
+        let tipoRotaSelecionadoFinalizar = null;
+        let corRotaSelecionadaFinalizar = null;
+
+        /* ============================================ */
+        /* Login                                        */
+        /* ============================================ */
         function entrar(event) {
             event.preventDefault();
             const email = document.getElementById('emailInput').value.trim().toLowerCase();
@@ -972,14 +1360,34 @@
             configurarUIPorPermissao();
             atualizarHora();
             setInterval(atualizarHora, 1000);
+
+            // Inicializa mapa depois que container está visível
+            setTimeout(inicializarMapa, 100);
         }
 
         function sair() {
             usuarioAtual = null;
+            cancelarDesenho();
             document.getElementById('loginScreen').classList.remove('hidden');
             document.getElementById('appContainer').classList.add('hidden');
             document.getElementById('emailInput').value = 'elilson@vale.com';
             document.getElementById('senhaInput').value = '123';
+        }
+
+        function toggleSenha() {
+            const input = document.getElementById('senhaInput');
+            const btn = document.getElementById('toggleSenhaBtn');
+            if (input.type === 'password') {
+                input.type = 'text'; btn.textContent = '🙈';
+            } else {
+                input.type = 'password'; btn.textContent = '👁️';
+            }
+        }
+
+        function preencherCredencial(email, senha) {
+            document.getElementById('emailInput').value = email;
+            document.getElementById('senhaInput').value = senha;
+            document.getElementById('loginError').classList.remove('active');
         }
 
         function configurarUIPorPermissao() {
@@ -988,6 +1396,7 @@
             const badgeText = document.getElementById('userBadgeText');
 
             const btnRota = document.getElementById('btnCadastrarRota');
+            const btnDesenhar = document.getElementById('btnDesenharRotaMapa');
             const btnBloqueio = document.getElementById('btnRegistrarBloqueio');
             const btnDashboard = document.getElementById('btnDashboardDespachante');
             const avisoUsuario = document.getElementById('avisoUsuario');
@@ -999,16 +1408,18 @@
                 badgeText.textContent = usuarioAtual.nome;
 
                 btnRota.classList.remove('hidden');
+                btnDesenhar.classList.remove('hidden');
                 btnBloqueio.classList.remove('hidden');
                 btnDashboard.classList.remove('hidden');
                 avisoUsuario.classList.add('hidden');
-                if (rotasVaziasHint) rotasVaziasHint.textContent = 'Clique em "Cadastrar Nova Rota" para adicionar.';
+                if (rotasVaziasHint) rotasVaziasHint.textContent = 'Clique em "Desenhar Rota no Mapa" ou "Cadastrar Nova Rota".';
             } else {
                 badge.className = 'user-badge user';
                 badgeIcon.textContent = '👤';
                 badgeText.textContent = usuarioAtual.nome;
 
                 btnRota.classList.add('hidden');
+                btnDesenhar.classList.add('hidden');
                 btnBloqueio.classList.add('hidden');
                 btnDashboard.classList.add('hidden');
                 avisoUsuario.classList.remove('hidden');
@@ -1025,9 +1436,257 @@
             document.getElementById('horaAtual').textContent = `${horas}:${minutos}`;
         }
 
-        function abrirModalSolicitar() {
-            document.getElementById('modalSolicitar').classList.add('active');
+        /* ============================================ */
+        /* Mapa Leaflet                                 */
+        /* ============================================ */
+        function inicializarMapa() {
+            if (mapa) return;
+
+            mapa = L.map('mapaLeaflet', {
+                zoomControl: true
+            }).setView(CENTRO_PORTO, ZOOM_PADRAO);
+
+            // Camada satélite (Esri) — melhor pra área portuária/industrial
+            L.tileLayer(
+                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                {
+                    attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+                    maxZoom: 19
+                }
+            ).addTo(mapa);
+
+            // Sobreposição de nomes (labels)
+            L.tileLayer(
+                'https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+                { maxZoom: 19, opacity: 0.9 }
+            ).addTo(mapa);
+
+            // Handler de clique para modo desenho
+            mapa.on('click', (e) => {
+                if (modoDesenhoAtivo) adicionarPontoDesenho(e.latlng);
+            });
+
+            // Ajusta tamanho (às vezes carrega meio quebrado)
+            setTimeout(() => mapa.invalidateSize(), 200);
         }
+
+        /* ============================================ */
+        /* Desenho de rota (ADM)                        */
+        /* ============================================ */
+        function iniciarDesenhoRota() {
+            if (!usuarioAtual || usuarioAtual.tipo !== 'adm') {
+                mostrarNotificacao('⛔ Acesso negado.', 'erro'); return;
+            }
+            if (modoDesenhoAtivo) return;
+
+            modoDesenhoAtivo = true;
+            pontosDesenho = [];
+            marcadoresDesenho = [];
+            polylineDesenho = null;
+
+            document.getElementById('modoDesenhoBar').classList.add('active');
+            atualizarContadorPontos();
+
+            if (mapa) mapa.getContainer().style.cursor = 'crosshair';
+            mostrarNotificacao('✏️ Modo desenho ativado. Clique no mapa para adicionar pontos.', 'adm');
+        }
+
+        function adicionarPontoDesenho(latlng) {
+            pontosDesenho.push([latlng.lat, latlng.lng]);
+
+            // Marcador numerado
+            const idx = pontosDesenho.length;
+            const icon = L.divIcon({
+                className: '',
+                html: `<div class="ponto-rota-marker">${idx}</div>`,
+                iconSize: [28, 28],
+                iconAnchor: [14, 14]
+            });
+            const marker = L.marker(latlng, { icon }).addTo(mapa);
+            marcadoresDesenho.push(marker);
+
+            // Atualiza polyline
+            if (polylineDesenho) {
+                polylineDesenho.setLatLngs(pontosDesenho);
+            } else if (pontosDesenho.length >= 2) {
+                polylineDesenho = L.polyline(pontosDesenho, {
+                    color: '#E55934',
+                    weight: 5,
+                    opacity: 0.85,
+                    dashArray: '8, 6'
+                }).addTo(mapa);
+            }
+
+            atualizarContadorPontos();
+        }
+
+        function desfazerUltimoPonto() {
+            if (pontosDesenho.length === 0) return;
+            pontosDesenho.pop();
+            const m = marcadoresDesenho.pop();
+            if (m) mapa.removeLayer(m);
+
+            if (polylineDesenho) {
+                if (pontosDesenho.length >= 2) {
+                    polylineDesenho.setLatLngs(pontosDesenho);
+                } else {
+                    mapa.removeLayer(polylineDesenho);
+                    polylineDesenho = null;
+                }
+            }
+            atualizarContadorPontos();
+        }
+
+        function atualizarContadorPontos() {
+            const n = pontosDesenho.length;
+            document.getElementById('contadorPontos').textContent = `${n} ponto${n !== 1 ? 's' : ''}`;
+            document.getElementById('btnSalvarRota').disabled = n < 2;
+        }
+
+        function cancelarDesenho() {
+            modoDesenhoAtivo = false;
+            document.getElementById('modoDesenhoBar').classList.remove('active');
+            if (mapa) mapa.getContainer().style.cursor = '';
+
+            marcadoresDesenho.forEach(m => mapa.removeLayer(m));
+            marcadoresDesenho = [];
+            if (polylineDesenho) { mapa.removeLayer(polylineDesenho); polylineDesenho = null; }
+            pontosDesenho = [];
+        }
+
+        function salvarRotaDesenhada() {
+            if (pontosDesenho.length < 2) {
+                mostrarNotificacao('⚠ Adicione ao menos 2 pontos.', 'erro'); return;
+            }
+
+            // Calcula distância total
+            const distKm = calcularDistancia(pontosDesenho);
+
+            // Abre modal para completar metadados
+            document.getElementById('finalizarPontosCount').textContent = pontosDesenho.length;
+            document.getElementById('finalizarDistancia').textContent = distKm.toFixed(2);
+            document.getElementById('finalizarNome').value = '';
+            document.getElementById('finalizarOrigem').value = '';
+            document.getElementById('finalizarDestino').value = '';
+            document.querySelectorAll('#modalFinalizarRota .tipo-rota-opcao').forEach(el => el.classList.remove('selected'));
+            tipoRotaSelecionadoFinalizar = null;
+            corRotaSelecionadaFinalizar = null;
+            document.getElementById('modalFinalizarRota').classList.add('active');
+        }
+
+        function selecionarTipoRotaFinalizar(event, tipo, cor) {
+            document.querySelectorAll('#modalFinalizarRota .tipo-rota-opcao').forEach(el => el.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            tipoRotaSelecionadoFinalizar = tipo;
+            corRotaSelecionadaFinalizar = cor;
+        }
+
+        function confirmarRotaDesenhada() {
+            const nome = document.getElementById('finalizarNome').value.trim();
+            const origem = document.getElementById('finalizarOrigem').value;
+            const destino = document.getElementById('finalizarDestino').value;
+
+            if (!nome || !origem || !destino || !tipoRotaSelecionadoFinalizar) {
+                mostrarNotificacao('⚠ Preencha todos os campos.', 'erro'); return;
+            }
+            if (origem === destino) {
+                mostrarNotificacao('⚠ Origem e destino não podem ser iguais.', 'erro'); return;
+            }
+
+            const distKm = calcularDistancia(pontosDesenho);
+            const novaRota = {
+                id: Date.now(),
+                nome, origem, destino,
+                tipo: tipoRotaSelecionadoFinalizar,
+                cor: corRotaSelecionadaFinalizar,
+                distancia: parseFloat(distKm.toFixed(2)),
+                pontos: pontosDesenho.slice()
+            };
+
+            rotas.push(novaRota);
+            desenharRotaSalva(novaRota);
+
+            // Limpa desenho temporário (mas mantém a rota salva visível)
+            marcadoresDesenho.forEach(m => mapa.removeLayer(m));
+            marcadoresDesenho = [];
+            if (polylineDesenho) { mapa.removeLayer(polylineDesenho); polylineDesenho = null; }
+            pontosDesenho = [];
+            modoDesenhoAtivo = false;
+            document.getElementById('modoDesenhoBar').classList.remove('active');
+            if (mapa) mapa.getContainer().style.cursor = '';
+
+            document.getElementById('modalFinalizarRota').classList.remove('active');
+            renderizarRotas();
+            atualizarKPIRotas();
+            mostrarNotificacao(`✓ Rota "${nome}" salva com ${novaRota.pontos.length} pontos (${novaRota.distancia} km).`, 'adm');
+        }
+
+        function desenharRotaSalva(rota) {
+            if (!rota.pontos || rota.pontos.length < 2) return;
+
+            const polyline = L.polyline(rota.pontos, {
+                color: rota.cor, weight: 5, opacity: 0.85
+            }).addTo(mapa);
+
+            polyline.bindPopup(`
+                <strong>${rota.nome}</strong><br>
+                ${rota.origem} → ${rota.destino}<br>
+                <small>${rota.tipo} • ${rota.distancia} km</small>
+            `);
+
+            // Marcadores de origem e destino
+            const origem = L.circleMarker(rota.pontos[0], {
+                radius: 7, color: '#fff', weight: 2, fillColor: rota.cor, fillOpacity: 1
+            }).addTo(mapa).bindTooltip('Origem: ' + rota.origem);
+
+            const destino = L.circleMarker(rota.pontos[rota.pontos.length - 1], {
+                radius: 7, color: '#fff', weight: 2, fillColor: rota.cor, fillOpacity: 1
+            }).addTo(mapa).bindTooltip('Destino: ' + rota.destino);
+
+            camadasRotas[rota.id] = { polyline, origem, destino };
+        }
+
+        function removerCamadaRota(id) {
+            const c = camadasRotas[id];
+            if (!c) return;
+            mapa.removeLayer(c.polyline);
+            mapa.removeLayer(c.origem);
+            mapa.removeLayer(c.destino);
+            delete camadasRotas[id];
+        }
+
+        function focarRotaNoMapa(id) {
+            const rota = rotas.find(r => r.id === id);
+            if (!rota || !rota.pontos || rota.pontos.length < 1) return;
+            if (rota.pontos.length === 1) mapa.setView(rota.pontos[0], 17);
+            else mapa.fitBounds(rota.pontos, { padding: [40, 40] });
+
+            const c = camadasRotas[id];
+            if (c) c.polyline.openPopup();
+        }
+
+        function calcularDistancia(pontos) {
+            let total = 0;
+            for (let i = 1; i < pontos.length; i++) {
+                total += haversine(pontos[i-1], pontos[i]);
+            }
+            return total;
+        }
+
+        function haversine(a, b) {
+            const R = 6371; // km
+            const dLat = (b[0] - a[0]) * Math.PI / 180;
+            const dLng = (b[1] - a[1]) * Math.PI / 180;
+            const la1 = a[0] * Math.PI / 180;
+            const la2 = b[0] * Math.PI / 180;
+            const h = Math.sin(dLat/2)**2 + Math.cos(la1)*Math.cos(la2)*Math.sin(dLng/2)**2;
+            return 2 * R * Math.asin(Math.sqrt(h));
+        }
+
+        /* ============================================ */
+        /* Modais Solicitar / Rota (sem mapa) / Bloqueio */
+        /* ============================================ */
+        function abrirModalSolicitar() { document.getElementById('modalSolicitar').classList.add('active'); }
 
         function fecharModalSolicitar() {
             document.getElementById('modalSolicitar').classList.remove('active');
@@ -1037,11 +1696,7 @@
 
         function buscarVeiculos() {
             const destino = document.getElementById('destinoSelect').value;
-            if (destino) {
-                document.getElementById('veiculosLista').classList.add('active');
-            } else {
-                document.getElementById('veiculosLista').classList.remove('active');
-            }
+            document.getElementById('veiculosLista').classList.toggle('active', !!destino);
         }
 
         function selecionarVeiculo(empresa, tempo) {
@@ -1050,10 +1705,7 @@
         }
 
         function abrirModalRota() {
-            if (usuarioAtual.tipo !== 'adm') {
-                mostrarNotificacao('⛔ Acesso negado. Apenas administradores.', 'erro');
-                return;
-            }
+            if (usuarioAtual.tipo !== 'adm') { mostrarNotificacao('⛔ Acesso negado.', 'erro'); return; }
             document.getElementById('modalRota').classList.add('active');
         }
 
@@ -1063,13 +1715,13 @@
             document.getElementById('rotaOrigem').value = '';
             document.getElementById('rotaDestino').value = '';
             document.getElementById('rotaDistancia').value = '3.5';
-            document.querySelectorAll('.tipo-rota-opcao').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('#modalRota .tipo-rota-opcao').forEach(el => el.classList.remove('selected'));
             tipoRotaSelecionado = null;
             corRotaSelecionada = null;
         }
 
         function selecionarTipoRota(event, tipo, cor) {
-            document.querySelectorAll('.tipo-rota-opcao').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('#modalRota .tipo-rota-opcao').forEach(el => el.classList.remove('selected'));
             event.currentTarget.classList.add('selected');
             tipoRotaSelecionado = tipo;
             corRotaSelecionada = cor;
@@ -1082,13 +1734,10 @@
             const distancia = document.getElementById('rotaDistancia').value;
 
             if (!nome || !origem || !destino || !tipoRotaSelecionado) {
-                mostrarNotificacao('⚠ Preencha todos os campos e selecione o tipo de rota.', 'erro');
-                return;
+                mostrarNotificacao('⚠ Preencha todos os campos e selecione o tipo.', 'erro'); return;
             }
-
             if (origem === destino) {
-                mostrarNotificacao('⚠ Origem e destino não podem ser iguais.', 'erro');
-                return;
+                mostrarNotificacao('⚠ Origem e destino não podem ser iguais.', 'erro'); return;
             }
 
             const novaRota = {
@@ -1096,13 +1745,14 @@
                 nome, origem, destino,
                 tipo: tipoRotaSelecionado,
                 cor: corRotaSelecionada,
-                distancia: parseFloat(distancia)
+                distancia: parseFloat(distancia),
+                pontos: null
             };
 
             rotas.push(novaRota);
             renderizarRotas();
             atualizarKPIRotas();
-            mostrarNotificacao(`✓ Rota "${nome}" cadastrada com sucesso!`, 'adm');
+            mostrarNotificacao(`✓ Rota "${nome}" cadastrada!`, 'adm');
             fecharModalRota();
         }
 
@@ -1111,20 +1761,18 @@
 
             if (rotas.length === 0) {
                 const hint = usuarioAtual && usuarioAtual.tipo === 'adm'
-                    ? 'Clique em "Cadastrar Nova Rota" para adicionar.'
+                    ? 'Clique em "Desenhar Rota no Mapa" ou "Cadastrar Nova Rota".'
                     : 'Peça ao administrador para cadastrar rotas.';
-                container.innerHTML = `
-                    <div class="rotas-vazias">
-                        Nenhuma rota cadastrada ainda.<br>
-                        <span>${hint}</span>
-                    </div>
-                `;
+                container.innerHTML = `<div class="rotas-vazias">Nenhuma rota cadastrada ainda.<br><span>${hint}</span></div>`;
                 return;
             }
 
             container.innerHTML = rotas.map(rota => `
-                <div class="rota-item" style="border-left-color: ${rota.cor};">
-                    ${usuarioAtual.tipo === 'adm' ? `<button class="rota-item-delete" onclick="removerRota(${rota.id})">🗑</button>` : ''}
+                <div class="rota-item" style="border-left-color: ${rota.cor};" onclick="focarRotaNoMapa(${rota.id})">
+                    <div class="rota-item-acoes">
+                        ${rota.pontos ? '<span class="rota-item-btn" title="Traçada no mapa">🗺️</span>' : ''}
+                        ${usuarioAtual.tipo === 'adm' ? `<button class="rota-item-btn delete" onclick="event.stopPropagation(); removerRota(${rota.id})" title="Remover">🗑</button>` : ''}
+                    </div>
                     <div class="rota-item-nome">${rota.nome}</div>
                     <div class="rota-item-tipo">
                         ${rota.origem} → ${rota.destino}<br>
@@ -1137,6 +1785,7 @@
         function removerRota(id) {
             if (usuarioAtual.tipo !== 'adm') return;
             rotas = rotas.filter(r => r.id !== id);
+            removerCamadaRota(id);
             renderizarRotas();
             atualizarKPIRotas();
             mostrarNotificacao('Rota removida.', 'adm');
@@ -1147,26 +1796,18 @@
         }
 
         function abrirModalBloqueio() {
-            if (usuarioAtual.tipo !== 'adm') {
-                mostrarNotificacao('⛔ Acesso negado. Apenas administradores.', 'erro');
-                return;
-            }
+            if (usuarioAtual.tipo !== 'adm') { mostrarNotificacao('⛔ Acesso negado.', 'erro'); return; }
             document.getElementById('modalBloqueio').classList.add('active');
         }
 
-        function fecharModalBloqueio() {
-            document.getElementById('modalBloqueio').classList.remove('active');
-        }
+        function fecharModalBloqueio() { document.getElementById('modalBloqueio').classList.remove('active'); }
 
         function confirmarBloqueio() {
             const localizacao = document.getElementById('localizacaoBloqueio').value;
             const motivo = document.getElementById('motivoBloqueio').value;
             const tempo = document.getElementById('tempoEstimado').value;
 
-            if (!localizacao || !motivo) {
-                mostrarNotificacao('⚠ Preencha todos os campos.', 'erro');
-                return;
-            }
+            if (!localizacao || !motivo) { mostrarNotificacao('⚠ Preencha todos os campos.', 'erro'); return; }
 
             contadorInterdicoes++;
             document.getElementById('contadorInterdicoes').textContent = contadorInterdicoes;
@@ -1183,6 +1824,7 @@
         function voltarDashboard() {
             document.getElementById('dashboardPrincipal').classList.remove('hidden');
             document.getElementById('dashboardDespachante').classList.remove('active');
+            setTimeout(() => mapa && mapa.invalidateSize(), 100);
         }
 
         function mostrarNotificacao(mensagem, tipo = 'verde') {
@@ -1191,10 +1833,7 @@
             notif.className = 'notificacao active';
             if (tipo === 'erro') notif.classList.add('erro');
             if (tipo === 'adm') notif.classList.add('adm');
-
-            setTimeout(() => {
-                notif.classList.remove('active');
-            }, 3500);
+            setTimeout(() => notif.classList.remove('active'), 3500);
         }
 
         function fecharModalClick(event) {
